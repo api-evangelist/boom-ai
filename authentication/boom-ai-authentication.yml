@@ -1,0 +1,21 @@
+generated: '2026-07-18'
+method: searched
+source: openapi/boom-ai-openapi-original.json
+docs: https://docs.useboom.ai/quickstart
+notes: >-
+  Single scheme: a per-organization Bearer API key with the prefix `boom_org_...`,
+  sent as `Authorization: Bearer <key>`. Applied globally to every operation. Use a
+  development-organization key against the https://dev.useboom.ai sandbox host. The
+  hosted MCP server authenticates instead via interactive Boom dashboard login (OAuth),
+  not the API key. No OAuth2 scopes surface — access is scoped to the organization and
+  destructive actions require an org admin.
+summary:
+  types:
+  - http
+schemes:
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  description: 'Organization API key, sent as `Authorization: Bearer [example key]`.'
+  sources:
+  - openapi/boom-ai-openapi-original.json
