@@ -1,0 +1,1082 @@
+openapi: 3.1.0
+info:
+  title: Boom CDP Custom Objects WhatsApp templates API
+  version: 1.0.0
+  description: 'Boom''s public REST API — one uniform surface over every platform capability. CDP: upsert people and custom objects, define object and relationship types, link and unlink relationships, and record behavioral events — one record per request or up to 1000 per request via the `/batch` endpoints. Segments: read (list, read, membership) and full authoring — discover the filterable catalog, validate a filter, create and update segments, preview match counts, and trigger evaluation. Initiatives: create and configure outreach initiatives, link WhatsApp templates, drive the lifecycle (launch, cancel, archive), and read collected-data summaries. Participants: enroll people into an active initiative, track their status, read conversation transcripts, and stop outreach. Journeys: read-only access to always-on message flows and their metrics. WhatsApp templates: list your WhatsApp numbers and list, read, and create message templates. The same capabilities are exposed as MCP tools with identical schemas.'
+servers:
+- url: https://www.useboom.ai
+  description: Production
+- url: https://dev.useboom.ai
+  description: Development (sandbox — use a development organization API key)
+security:
+- bearerAuth: []
+tags:
+- name: WhatsApp templates
+paths:
+  /api/v1/templates:
+    get:
+      operationId: templates_list
+      summary: List templates
+      description: List your WhatsApp templates and each one's approval status. Reviews are async (~24–48h) — re-read to see updates.
+      tags:
+      - WhatsApp templates
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          enum:
+          - DRAFT
+          - PENDING
+          - APPROVED
+          - REJECTED
+      - name: category
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          enum:
+          - UTILITY
+          - MARKETING
+          - AUTHENTICATION
+      - name: contentType
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          enum:
+          - TEXT
+          - MEDIA
+          - QUICK_REPLY
+          - CALL_TO_ACTION
+          - CARD
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Template id.
+                        name:
+                          type: string
+                          description: Template name (unique per WhatsApp number).
+                        language:
+                          type: string
+                          description: WhatsApp language code the template was created for, e.g. `es_MX`.
+                        category:
+                          type: string
+                          enum:
+                          - UTILITY
+                          - MARKETING
+                          - AUTHENTICATION
+                        contentType:
+                          type: string
+                          enum:
+                          - TEXT
+                          - MEDIA
+                          - QUICK_REPLY
+                          - CALL_TO_ACTION
+                          - CARD
+                        content:
+                          description: The message content (shape per `contentType`).
+                        variables:
+                          anyOf:
+                          - type: object
+                            propertyNames:
+                              type: string
+                            additionalProperties:
+                              type: string
+                          - type: 'null'
+                          description: Example values for `{{1}}`-style placeholders.
+                        phoneNumbers:
+                          type: array
+                          items:
+                            type: string
+                          description: WhatsApp numbers this template can be sent from.
+                        status:
+                          type: string
+                          enum:
+                          - DRAFT
+                          - PENDING
+                          - APPROVED
+                          - REJECTED
+                          description: DRAFT (not yet submitted), PENDING (in WhatsApp review, typically 24-48h), APPROVED, or REJECTED (see rejectionReason).
+                        rejectionReason:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                        createdAt:
+                          type: string
+                          description: ISO 8601 timestamp.
+                        updatedAt:
+                          type: string
+                          description: ISO 8601 timestamp.
+                      required:
+                      - id
+                      - name
+                      - language
+                      - category
+                      - contentType
+                      - content
+                      - variables
+                      - phoneNumbers
+                      - status
+                      - rejectionReason
+                      - createdAt
+                      - updatedAt
+                      additionalProperties: false
+                  next_cursor:
+                    type: 'null'
+                required:
+                - data
+                - next_cursor
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+    post:
+      operationId: templates_create
+      summary: Create template
+      description: 'Create a WhatsApp template and submit it for WhatsApp approval, which is asynchronous (~24–48h). Example (TEXT): `{ "name": "order_shipped", "language": "es", "category": "UTILITY", "contentType": "TEXT", "content": { "body": "Hola {{1}}, tu pedido ya salió." }, "variables": { "1": "Ana" } }`. Example with buttons (CALL_TO_ACTION): `{ "name": "order_shipped_cta", "language": "es", "category": "UTILITY", "contentType": "CALL_TO_ACTION", "content": { "body": "Hola {{1}}, tu pedido ya salió.", "actions": [{ "type": "URL", "title": "Ver pedido", "url": "https://example.com/orders/{{2}}" }] }, "variables": { "1": "Ana", "2": "12345" } }`. Example with reply buttons (QUICK_REPLY): `{ "name": "order_feedback", "language": "es", "category": "UTILITY", "contentType": "QUICK_REPLY", "content": { "body": "¿Te gustó tu compra?", "actions": [{ "title": "Sí", "id": "yes" }, { "title": "No", "id": "no" }] } }`. Example with a header and image (CARD): `{ "name": "order_shipped_card", "language": "es", "category": "UTILITY", "contentType": "CARD", "content": { "headerType": "media", "mediaUrl": "https://example.com/banner.jpg", "body": "Hola {{1}}, tu pedido ya salió.", "footer": "Gracias por tu compra", "actions": [{ "type": "URL", "title": "Ver pedido", "url": "https://example.com/orders/{{2}}" }] }, "variables": { "1": "Ana", "2": "12345" } }`.'
+      tags:
+      - WhatsApp templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $schema: https://json-schema.org/draft/2020-12/schema
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  description: Template name, unique per WhatsApp number.
+                language:
+                  type: string
+                  minLength: 2
+                  maxLength: 10
+                  description: WhatsApp language code, e.g. `es`, `en`. A regional variant like `es_MX` or `en_US` is normalized to its base code.
+                category:
+                  type: string
+                  enum:
+                  - UTILITY
+                  - MARKETING
+                  - AUTHENTICATION
+                contentType:
+                  type: string
+                  enum:
+                  - TEXT
+                  - MEDIA
+                  - QUICK_REPLY
+                  - CALL_TO_ACTION
+                  - CARD
+                content:
+                  type: object
+                  propertyNames:
+                    type: string
+                  additionalProperties: {}
+                  description: 'Message content. Shape depends on `contentType`: TEXT `{ body }`; MEDIA `{ body?, media: [url] }`; QUICK_REPLY `{ body, actions: [{ title, id }] }`; CALL_TO_ACTION `{ body, actions: [{ type: URL|PHONE_NUMBER, title, url|phone }] }`; CARD `{ headerType, headerText|mediaUrl, body, footer?, actions? }`. Use `{{1}}`, `{{2}}`… for variables. Example (TEXT): `{ "body": "Hola {{1}}, tu pedido está en camino" }`. Example (CALL_TO_ACTION, adds a button): `{ "body": "Hola {{1}}, tu pedido está en camino", "actions": [{ "type": "URL", "title": "Ver pedido", "url": "https://example.com/orders/{{2}}" }] }`. Example (QUICK_REPLY, adds reply buttons): `{ "body": "¿Te gustó tu compra?", "actions": [{ "title": "Sí", "id": "yes" }, { "title": "No", "id": "no" }] }`. Example (CARD, header + optional footer/button): `{ "headerType": "text", "headerText": "Pedido en camino", "body": "Hola {{1}}, tu pedido ya salió.", "footer": "Gracias por tu compra", "actions": [{ "type": "URL", "title": "Ver pedido", "url": "https://example.com/orders/{{2}}" }] }`.'
+                variables:
+                  description: 'Example values for placeholders, e.g. `{ "1": "Ana" }` for `{{1}}`. Required for every placeholder used.'
+                  type: object
+                  propertyNames:
+                    type: string
+                  additionalProperties:
+                    type: string
+                phoneNumbers:
+                  description: WhatsApp numbers (E.164) to create the template for. Omit to use the first active number connected to your organization.
+                  minItems: 1
+                  type: array
+                  items:
+                    type: string
+                    minLength: 1
+              required:
+              - name
+              - language
+              - category
+              - contentType
+              - content
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Template id.
+                        name:
+                          type: string
+                          description: Template name (unique per WhatsApp number).
+                        language:
+                          type: string
+                          description: WhatsApp language code the template was created for, e.g. `es_MX`.
+                        category:
+                          type: string
+                          enum:
+                          - UTILITY
+                          - MARKETING
+                          - AUTHENTICATION
+                        contentType:
+                          type: string
+                          enum:
+                          - TEXT
+                          - MEDIA
+                          - QUICK_REPLY
+                          - CALL_TO_ACTION
+                          - CARD
+                        content:
+                          description: The message content (shape per `contentType`).
+                        variables:
+                          anyOf:
+                          - type: object
+                            propertyNames:
+                              type: string
+                            additionalProperties:
+                              type: string
+                          - type: 'null'
+                          description: Example values for `{{1}}`-style placeholders.
+                        phoneNumbers:
+                          type: array
+                          items:
+                            type: string
+                          description: WhatsApp numbers this template can be sent from.
+                        status:
+                          type: string
+                          enum:
+                          - DRAFT
+                          - PENDING
+                          - APPROVED
+                          - REJECTED
+                          description: DRAFT (not yet submitted), PENDING (in WhatsApp review, typically 24-48h), APPROVED, or REJECTED (see rejectionReason).
+                        rejectionReason:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                        createdAt:
+                          type: string
+                          description: ISO 8601 timestamp.
+                        updatedAt:
+                          type: string
+                          description: ISO 8601 timestamp.
+                      required:
+                      - id
+                      - name
+                      - language
+                      - category
+                      - contentType
+                      - content
+                      - variables
+                      - phoneNumbers
+                      - status
+                      - rejectionReason
+                      - createdAt
+                      - updatedAt
+                      additionalProperties: false
+                    description: The created template(s) — one per WhatsApp account backing the chosen numbers.
+                required:
+                - data
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/templates/{id}:
+    get:
+      operationId: templates_get
+      summary: Get template
+      description: Get one WhatsApp template by id, including its approval status and any rejection reason.
+      tags:
+      - WhatsApp templates
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          description: Template id.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Template id.
+                  name:
+                    type: string
+                    description: Template name (unique per WhatsApp number).
+                  language:
+                    type: string
+                    description: WhatsApp language code the template was created for, e.g. `es_MX`.
+                  category:
+                    type: string
+                    enum:
+                    - UTILITY
+                    - MARKETING
+                    - AUTHENTICATION
+                  contentType:
+                    type: string
+                    enum:
+                    - TEXT
+                    - MEDIA
+                    - QUICK_REPLY
+                    - CALL_TO_ACTION
+                    - CARD
+                  content:
+                    description: The message content (shape per `contentType`).
+                  variables:
+                    anyOf:
+                    - type: object
+                      propertyNames:
+                        type: string
+                      additionalProperties:
+                        type: string
+                    - type: 'null'
+                    description: Example values for `{{1}}`-style placeholders.
+                  phoneNumbers:
+                    type: array
+                    items:
+                      type: string
+                    description: WhatsApp numbers this template can be sent from.
+                  status:
+                    type: string
+                    enum:
+                    - DRAFT
+                    - PENDING
+                    - APPROVED
+                    - REJECTED
+                    description: DRAFT (not yet submitted), PENDING (in WhatsApp review, typically 24-48h), APPROVED, or REJECTED (see rejectionReason).
+                  rejectionReason:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  createdAt:
+                    type: string
+                    description: ISO 8601 timestamp.
+                  updatedAt:
+                    type: string
+                    description: ISO 8601 timestamp.
+                required:
+                - id
+                - name
+                - language
+                - category
+                - contentType
+                - content
+                - variables
+                - phoneNumbers
+                - status
+                - rejectionReason
+                - createdAt
+                - updatedAt
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/whatsapp-numbers:
+    get:
+      operationId: whatsapp_numbers_list
+      summary: List numbers
+      description: List the WhatsApp numbers connected to your organization. Use them when creating templates.
+      tags:
+      - WhatsApp templates
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        phoneNumber:
+                          type: string
+                          description: E.164 format, e.g. +5215512345678.
+                        displayName:
+                          type: string
+                        status:
+                          type: string
+                          description: ONLINE means ready to send and receive messages.
+                      required:
+                      - phoneNumber
+                      - displayName
+                      - status
+                      additionalProperties: false
+                  next_cursor:
+                    type: 'null'
+                required:
+                - data
+                - next_cursor
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Organization API key, sent as `Authorization: Bearer boom_org_...`.'

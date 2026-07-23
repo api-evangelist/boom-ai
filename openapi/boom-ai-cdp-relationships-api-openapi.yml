@@ -1,0 +1,1980 @@
+openapi: 3.1.0
+info:
+  title: Boom CDP Custom Objects CDP Relationships API
+  version: 1.0.0
+  description: 'Boom''s public REST API — one uniform surface over every platform capability. CDP: upsert people and custom objects, define object and relationship types, link and unlink relationships, and record behavioral events — one record per request or up to 1000 per request via the `/batch` endpoints. Segments: read (list, read, membership) and full authoring — discover the filterable catalog, validate a filter, create and update segments, preview match counts, and trigger evaluation. Initiatives: create and configure outreach initiatives, link WhatsApp templates, drive the lifecycle (launch, cancel, archive), and read collected-data summaries. Participants: enroll people into an active initiative, track their status, read conversation transcripts, and stop outreach. Journeys: read-only access to always-on message flows and their metrics. WhatsApp templates: list your WhatsApp numbers and list, read, and create message templates. The same capabilities are exposed as MCP tools with identical schemas.'
+servers:
+- url: https://www.useboom.ai
+  description: Production
+- url: https://dev.useboom.ai
+  description: Development (sandbox — use a development organization API key)
+security:
+- bearerAuth: []
+tags:
+- name: CDP Relationships
+paths:
+  /api/v1/cdp/relationship-types:
+    get:
+      operationId: cdp_relationship_types_list
+      summary: List relationship types
+      description: List the organization's relationship types — use it to discover valid link shapes before linking.
+      tags:
+      - CDP Relationships
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      anyOf:
+                      - type: object
+                        properties:
+                          kind:
+                            type: string
+                            const: person_to_co
+                          customObjectType:
+                            type: string
+                          relationshipTypeId:
+                            type: string
+                          role:
+                            type: string
+                            description: Edge role, e.g. "placed" or "has_line_item".
+                          cardinality:
+                            anyOf:
+                            - type: string
+                              enum:
+                              - ONE_TO_ONE
+                              - ONE_TO_MANY
+                              - MANY_TO_ONE
+                              - MANY_TO_MANY
+                            - type: 'null'
+                          description:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                          bidirectional:
+                            type: boolean
+                        required:
+                        - kind
+                        - customObjectType
+                        - relationshipTypeId
+                        - role
+                        - cardinality
+                        - description
+                        - bidirectional
+                        additionalProperties: false
+                      - type: object
+                        properties:
+                          kind:
+                            type: string
+                            const: co_to_co
+                          parentCustomObjectType:
+                            type: string
+                          childCustomObjectType:
+                            type: string
+                          relationshipTypeId:
+                            type: string
+                          role:
+                            type: string
+                            description: Edge role, e.g. "placed" or "has_line_item".
+                          cardinality:
+                            anyOf:
+                            - type: string
+                              enum:
+                              - ONE_TO_ONE
+                              - ONE_TO_MANY
+                              - MANY_TO_ONE
+                              - MANY_TO_MANY
+                            - type: 'null'
+                          description:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                          bidirectional:
+                            type: boolean
+                        required:
+                        - kind
+                        - parentCustomObjectType
+                        - childCustomObjectType
+                        - relationshipTypeId
+                        - role
+                        - cardinality
+                        - description
+                        - bidirectional
+                        additionalProperties: false
+                  next_cursor:
+                    type: 'null'
+                required:
+                - data
+                - next_cursor
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+    post:
+      operationId: cdp_relationship_types_register
+      summary: Register relationship type
+      description: Register a relationship type and its metadata. Re-registering an existing type updates it in place.
+      tags:
+      - CDP Relationships
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $schema: https://json-schema.org/draft/2020-12/schema
+              type: object
+              properties:
+                kind:
+                  type: string
+                  enum:
+                  - person_to_co
+                  - co_to_co
+                  description: Type kind. 'person_to_co' links people to one custom object type; 'co_to_co' links two custom object types.
+                role:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  description: Edge role, e.g. "placed" or "has_line_item".
+                customObjectType:
+                  description: Custom object type name. Required when kind is 'person_to_co'.
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                parentCustomObjectType:
+                  description: Parent custom object type name. Required when kind is 'co_to_co'.
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                childCustomObjectType:
+                  description: Child custom object type name. Required when kind is 'co_to_co'.
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                cardinality:
+                  description: 'Optional cardinality: ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, MANY_TO_MANY.'
+                  type: string
+                  enum:
+                  - ONE_TO_ONE
+                  - ONE_TO_MANY
+                  - MANY_TO_ONE
+                  - MANY_TO_MANY
+                description:
+                  description: Optional human-readable description of the relationship type.
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+                bidirectional:
+                  description: 'Optional: whether the relationship is bidirectional.'
+                  type: boolean
+              required:
+              - kind
+              - role
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                allOf:
+                - anyOf:
+                  - type: object
+                    properties:
+                      kind:
+                        type: string
+                        const: person_to_co
+                      customObjectType:
+                        type: string
+                      relationshipTypeId:
+                        type: string
+                      role:
+                        type: string
+                        description: Edge role, e.g. "placed" or "has_line_item".
+                      cardinality:
+                        anyOf:
+                        - type: string
+                          enum:
+                          - ONE_TO_ONE
+                          - ONE_TO_MANY
+                          - MANY_TO_ONE
+                          - MANY_TO_MANY
+                        - type: 'null'
+                      description:
+                        anyOf:
+                        - type: string
+                        - type: 'null'
+                      bidirectional:
+                        type: boolean
+                    required:
+                    - kind
+                    - customObjectType
+                    - relationshipTypeId
+                    - role
+                    - cardinality
+                    - description
+                    - bidirectional
+                    additionalProperties: false
+                  - type: object
+                    properties:
+                      kind:
+                        type: string
+                        const: co_to_co
+                      parentCustomObjectType:
+                        type: string
+                      childCustomObjectType:
+                        type: string
+                      relationshipTypeId:
+                        type: string
+                      role:
+                        type: string
+                        description: Edge role, e.g. "placed" or "has_line_item".
+                      cardinality:
+                        anyOf:
+                        - type: string
+                          enum:
+                          - ONE_TO_ONE
+                          - ONE_TO_MANY
+                          - MANY_TO_ONE
+                          - MANY_TO_MANY
+                        - type: 'null'
+                      description:
+                        anyOf:
+                        - type: string
+                        - type: 'null'
+                      bidirectional:
+                        type: boolean
+                    required:
+                    - kind
+                    - parentCustomObjectType
+                    - childCustomObjectType
+                    - relationshipTypeId
+                    - role
+                    - cardinality
+                    - description
+                    - bidirectional
+                    additionalProperties: false
+                - type: object
+                  properties:
+                    created:
+                      type: boolean
+                  required:
+                  - created
+                  additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/cdp/relationship-types/{relationshipTypeId}:
+    get:
+      operationId: cdp_relationship_types_get
+      summary: Get relationship type
+      description: Read one relationship type by id.
+      tags:
+      - CDP Relationships
+      parameters:
+      - name: relationshipTypeId
+        in: path
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          description: The relationship type id.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                anyOf:
+                - type: object
+                  properties:
+                    kind:
+                      type: string
+                      const: person_to_co
+                    customObjectType:
+                      type: string
+                    relationshipTypeId:
+                      type: string
+                    role:
+                      type: string
+                      description: Edge role, e.g. "placed" or "has_line_item".
+                    cardinality:
+                      anyOf:
+                      - type: string
+                        enum:
+                        - ONE_TO_ONE
+                        - ONE_TO_MANY
+                        - MANY_TO_ONE
+                        - MANY_TO_MANY
+                      - type: 'null'
+                    description:
+                      anyOf:
+                      - type: string
+                      - type: 'null'
+                    bidirectional:
+                      type: boolean
+                  required:
+                  - kind
+                  - customObjectType
+                  - relationshipTypeId
+                  - role
+                  - cardinality
+                  - description
+                  - bidirectional
+                  additionalProperties: false
+                - type: object
+                  properties:
+                    kind:
+                      type: string
+                      const: co_to_co
+                    parentCustomObjectType:
+                      type: string
+                    childCustomObjectType:
+                      type: string
+                    relationshipTypeId:
+                      type: string
+                    role:
+                      type: string
+                      description: Edge role, e.g. "placed" or "has_line_item".
+                    cardinality:
+                      anyOf:
+                      - type: string
+                        enum:
+                        - ONE_TO_ONE
+                        - ONE_TO_MANY
+                        - MANY_TO_ONE
+                        - MANY_TO_MANY
+                      - type: 'null'
+                    description:
+                      anyOf:
+                      - type: string
+                      - type: 'null'
+                    bidirectional:
+                      type: boolean
+                  required:
+                  - kind
+                  - parentCustomObjectType
+                  - childCustomObjectType
+                  - relationshipTypeId
+                  - role
+                  - cardinality
+                  - description
+                  - bidirectional
+                  additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/cdp/relationships:
+    delete:
+      operationId: cdp_relationships_unlink
+      summary: Unlink relationship
+      description: Unlink (soft-delete) a relationship. Idempotent.
+      tags:
+      - CDP Relationships
+      parameters:
+      - name: kind
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Edge kind. 'person_to_co' (default) links a person to a custom object; 'co_to_co' links a parent custom object to a child custom object.
+          type: string
+          enum:
+          - person_to_co
+          - co_to_co
+      - name: relationshipTypeId
+        in: query
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Id of the relationship type (from the relationship-types list). Fixes the role and the custom object type(s) the edge targets.
+      - name: personExternalId
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Person externalId. Required when kind is 'person_to_co'.
+          type: string
+          minLength: 1
+          maxLength: 255
+      - name: customObjectExternalId
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Custom object externalId. Required when kind is 'person_to_co'.
+          type: string
+          minLength: 1
+          maxLength: 255
+      - name: parentExternalId
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Parent custom object externalId. Required when kind is 'co_to_co'.
+          type: string
+          minLength: 1
+          maxLength: 255
+      - name: childExternalId
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Child custom object externalId. Required when kind is 'co_to_co'.
+          type: string
+          minLength: 1
+          maxLength: 255
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  removed:
+                    type: boolean
+                required:
+                - removed
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+    get:
+      operationId: cdp_relationships_list
+      summary: List relationships
+      description: List relationship edges of one kind, anchored on a person or custom object, newest first.
+      tags:
+      - CDP Relationships
+      parameters:
+      - name: kind
+        in: query
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          enum:
+          - person_to_co
+          - co_to_co
+          description: Which edge set to list.
+      - name: personExternalId
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: 'Anchor: person externalId (kind ''person_to_co'').'
+          type: string
+          minLength: 1
+      - name: customObjectType
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: 'Anchor: custom object type name. Required with customObjectExternalId.'
+          type: string
+          minLength: 1
+      - name: customObjectExternalId
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: 'Anchor: custom object externalId (scoped by customObjectType).'
+          type: string
+          minLength: 1
+      - name: direction
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: 'For kind ''co_to_co'': list the anchor''s children (default) or parents.'
+          type: string
+          enum:
+          - children
+          - parents
+      - name: include_removed
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Include soft-deleted (unlinked) edges. Defaults to false.
+          type: boolean
+      - name: relationshipTypeId
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Filter by relationship type id.
+          type: string
+          minLength: 1
+      - name: role
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Filter by edge role.
+          type: string
+          minLength: 1
+      - name: limit
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Max items to return, 1-1000 (default 100).
+          type: integer
+          minimum: 1
+          maximum: 1000
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Opaque pagination token from a previous response's `next_cursor`. Omit for the first page.
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      anyOf:
+                      - type: object
+                        properties:
+                          kind:
+                            type: string
+                            const: person_to_co
+                          personExternalId:
+                            type: string
+                          customObjectType:
+                            type: string
+                          customObjectExternalId:
+                            type: string
+                          relationshipTypeId:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                          role:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                          attributes:
+                            type: object
+                            propertyNames:
+                              type: string
+                            additionalProperties: {}
+                          createdAt:
+                            type: string
+                            description: ISO 8601 timestamp.
+                          updatedAt:
+                            type: string
+                            description: ISO 8601 timestamp.
+                        required:
+                        - kind
+                        - personExternalId
+                        - customObjectType
+                        - customObjectExternalId
+                        - relationshipTypeId
+                        - role
+                        - attributes
+                        - createdAt
+                        - updatedAt
+                        additionalProperties: false
+                      - type: object
+                        properties:
+                          kind:
+                            type: string
+                            const: co_to_co
+                          parentCustomObjectType:
+                            type: string
+                          parentExternalId:
+                            type: string
+                          childCustomObjectType:
+                            type: string
+                          childExternalId:
+                            type: string
+                          relationshipTypeId:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                          role:
+                            anyOf:
+                            - type: string
+                            - type: 'null'
+                          attributes:
+                            type: object
+                            propertyNames:
+                              type: string
+                            additionalProperties: {}
+                          createdAt:
+                            type: string
+                            description: ISO 8601 timestamp.
+                          updatedAt:
+                            type: string
+                            description: ISO 8601 timestamp.
+                        required:
+                        - kind
+                        - parentCustomObjectType
+                        - parentExternalId
+                        - childCustomObjectType
+                        - childExternalId
+                        - relationshipTypeId
+                        - role
+                        - attributes
+                        - createdAt
+                        - updatedAt
+                        additionalProperties: false
+                  next_cursor:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                required:
+                - data
+                - next_cursor
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+    post:
+      operationId: cdp_relationships_link
+      summary: Link relationship
+      description: Link a person to a custom object, or one custom object to another. Idempotent.
+      tags:
+      - CDP Relationships
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $schema: https://json-schema.org/draft/2020-12/schema
+              type: object
+              properties:
+                kind:
+                  description: Edge kind. 'person_to_co' (default) links a person to a custom object; 'co_to_co' links a parent custom object to a child custom object.
+                  type: string
+                  enum:
+                  - person_to_co
+                  - co_to_co
+                relationshipTypeId:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  description: Id of the relationship type (from the relationship-types list). Fixes the role and the custom object type(s) the edge targets.
+                personExternalId:
+                  description: Person externalId. Required when kind is 'person_to_co'.
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                customObjectExternalId:
+                  description: Custom object externalId. Required when kind is 'person_to_co'.
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                parentExternalId:
+                  description: Parent custom object externalId. Required when kind is 'co_to_co'.
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                childExternalId:
+                  description: Child custom object externalId. Required when kind is 'co_to_co'.
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+              required:
+              - relationshipTypeId
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  created:
+                    type: boolean
+                  relationshipTypeId:
+                    type: string
+                required:
+                - created
+                - relationshipTypeId
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/cdp/relationships/batch:
+    post:
+      operationId: cdp_relationships_batch
+      summary: Batch link / unlink
+      description: Link or unlink up to 1000 relationships in one request.
+      tags:
+      - CDP Relationships
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $schema: https://json-schema.org/draft/2020-12/schema
+              type: object
+              properties:
+                items:
+                  minItems: 1
+                  maxItems: 1000
+                  type: array
+                  items:
+                    oneOf:
+                    - type: object
+                      properties:
+                        kind:
+                          type: string
+                          const: person_to_co
+                        personExternalId:
+                          type: string
+                          minLength: 1
+                          maxLength: 255
+                          description: Person externalId.
+                        customObjectExternalId:
+                          type: string
+                          minLength: 1
+                          maxLength: 255
+                          description: Custom object externalId.
+                        relationshipTypeId:
+                          type: string
+                          minLength: 1
+                          maxLength: 255
+                          description: Relationship type id (from the relationship-types list).
+                        remove:
+                          description: Set true to unlink (soft-delete) instead of link.
+                          type: boolean
+                      required:
+                      - kind
+                      - personExternalId
+                      - customObjectExternalId
+                      - relationshipTypeId
+                    - type: object
+                      properties:
+                        kind:
+                          type: string
+                          const: co_to_co
+                        parentExternalId:
+                          type: string
+                          minLength: 1
+                          maxLength: 255
+                          description: Parent custom object externalId.
+                        childExternalId:
+                          type: string
+                          minLength: 1
+                          maxLength: 255
+                          description: Child custom object externalId.
+                        relationshipTypeId:
+                          type: string
+                          minLength: 1
+                          maxLength: 255
+                          description: Relationship type id (from the relationship-types list).
+                        remove:
+                          description: Set true to unlink (soft-delete) instead of link.
+                          type: boolean
+                      required:
+                      - kind
+                      - parentExternalId
+                      - childExternalId
+                      - relationshipTypeId
+                  description: Relationships to link or unlink.
+              required:
+              - items
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  summary:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                      created:
+                        type: integer
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                      reactivated:
+                        type: integer
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                        description: Previously-unlinked edges that were re-activated.
+                      removed:
+                        type: integer
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                      failed:
+                        type: integer
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                    required:
+                    - total
+                    - created
+                    - reactivated
+                    - removed
+                    - failed
+                    additionalProperties: false
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        index:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                          description: Zero-based index of the failed item.
+                        externalId:
+                          type: string
+                        error:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              description: Stable machine-readable error code (snake_case).
+                            message:
+                              type: string
+                          required:
+                          - code
+                          - message
+                          additionalProperties: false
+                      required:
+                      - index
+                      - error
+                      additionalProperties: false
+                required:
+                - summary
+                - errors
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Organization API key, sent as `Authorization: Bearer boom_org_...`.'

@@ -1,0 +1,1804 @@
+openapi: 3.1.0
+info:
+  title: Boom CDP Custom Objects API
+  version: 1.0.0
+  description: 'Boom''s public REST API — one uniform surface over every platform capability. CDP: upsert people and custom objects, define object and relationship types, link and unlink relationships, and record behavioral events — one record per request or up to 1000 per request via the `/batch` endpoints. Segments: read (list, read, membership) and full authoring — discover the filterable catalog, validate a filter, create and update segments, preview match counts, and trigger evaluation. Initiatives: create and configure outreach initiatives, link WhatsApp templates, drive the lifecycle (launch, cancel, archive), and read collected-data summaries. Participants: enroll people into an active initiative, track their status, read conversation transcripts, and stop outreach. Journeys: read-only access to always-on message flows and their metrics. WhatsApp templates: list your WhatsApp numbers and list, read, and create message templates. The same capabilities are exposed as MCP tools with identical schemas.'
+servers:
+- url: https://www.useboom.ai
+  description: Production
+- url: https://dev.useboom.ai
+  description: Development (sandbox — use a development organization API key)
+security:
+- bearerAuth: []
+tags:
+- name: CDP Custom Objects
+paths:
+  /api/v1/cdp/custom-objects:
+    get:
+      operationId: cdp_custom_objects_list
+      summary: List objects
+      description: List custom objects of one type, newest first.
+      tags:
+      - CDP Custom Objects
+      parameters:
+      - name: type
+        in: query
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The custom object type name to list.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Max items to return, 1-1000 (default 100).
+          type: integer
+          minimum: 1
+          maximum: 1000
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Opaque pagination token from a previous response's `next_cursor`. Omit for the first page.
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        type:
+                          type: string
+                          description: The custom object type name.
+                        externalId:
+                          type: string
+                          description: Your stable identifier for this object within its type.
+                        displayName:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                        attributes:
+                          type: object
+                          propertyNames:
+                            type: string
+                          additionalProperties: {}
+                          description: Free-form custom traits.
+                        createdAt:
+                          type: string
+                          description: ISO 8601 timestamp.
+                        updatedAt:
+                          type: string
+                          description: ISO 8601 timestamp.
+                      required:
+                      - type
+                      - externalId
+                      - displayName
+                      - attributes
+                      - createdAt
+                      - updatedAt
+                      additionalProperties: false
+                  next_cursor:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                required:
+                - data
+                - next_cursor
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+    post:
+      operationId: cdp_custom_objects_upsert
+      summary: Upsert object
+      description: Create or update a custom object by type and external id. The type must already exist; free-form attributes are fully replaced.
+      tags:
+      - CDP Custom Objects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $schema: https://json-schema.org/draft/2020-12/schema
+              type: object
+              properties:
+                type:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  description: The custom object type name. Must already exist (create it with the types endpoint) — unknown types are rejected.
+                externalId:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  description: Your stable identifier for this object within its type (idempotency key).
+                displayName:
+                  description: Human-readable label for the object.
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                attributes:
+                  description: Free-form custom traits (full-replace on upsert).
+                  type: object
+                  propertyNames:
+                    type: string
+                    maxLength: 255
+                  additionalProperties: {}
+              required:
+              - type
+              - externalId
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  type:
+                    type: string
+                  externalId:
+                    type: string
+                  created:
+                    type: boolean
+                required:
+                - type
+                - externalId
+                - created
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/cdp/custom-objects/{type}/{externalId}:
+    delete:
+      operationId: cdp_custom_objects_delete
+      summary: Delete object
+      description: Soft-delete a custom object and its links. Idempotent.
+      tags:
+      - CDP Custom Objects
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The custom object type name.
+      - name: externalId
+        in: path
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The object externalId within its type.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  removed:
+                    type: boolean
+                required:
+                - removed
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+    get:
+      operationId: cdp_custom_objects_get
+      summary: Get object
+      description: Read one custom object by type and external id.
+      tags:
+      - CDP Custom Objects
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The custom object type name.
+      - name: externalId
+        in: path
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The object externalId within its type.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: The custom object type name.
+                  externalId:
+                    type: string
+                    description: Your stable identifier for this object within its type.
+                  displayName:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  attributes:
+                    type: object
+                    propertyNames:
+                      type: string
+                    additionalProperties: {}
+                    description: Free-form custom traits.
+                  createdAt:
+                    type: string
+                    description: ISO 8601 timestamp.
+                  updatedAt:
+                    type: string
+                    description: ISO 8601 timestamp.
+                required:
+                - type
+                - externalId
+                - displayName
+                - attributes
+                - createdAt
+                - updatedAt
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/cdp/custom-objects/batch:
+    post:
+      operationId: cdp_custom_objects_batch_upsert
+      summary: Batch upsert objects
+      description: Upsert up to 1000 custom objects in one request. Idempotent and safely retryable.
+      tags:
+      - CDP Custom Objects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $schema: https://json-schema.org/draft/2020-12/schema
+              type: object
+              properties:
+                items:
+                  minItems: 1
+                  maxItems: 1000
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        minLength: 1
+                        maxLength: 255
+                        description: The custom object type name. Must already exist (create it with the types endpoint) — unknown types are rejected.
+                      externalId:
+                        type: string
+                        minLength: 1
+                        maxLength: 255
+                        description: Your stable identifier for this object within its type (idempotency key).
+                      displayName:
+                        description: Human-readable label for the object.
+                        type: string
+                        minLength: 1
+                        maxLength: 255
+                      attributes:
+                        description: Free-form custom traits (full-replace on upsert).
+                        type: object
+                        propertyNames:
+                          type: string
+                          maxLength: 255
+                        additionalProperties: {}
+                    required:
+                    - type
+                    - externalId
+                  description: Custom objects to upsert.
+              required:
+              - items
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  summary:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                      created:
+                        type: integer
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                      updated:
+                        type: integer
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                      failed:
+                        type: integer
+                        minimum: -9007199254740991
+                        maximum: 9007199254740991
+                    required:
+                    - total
+                    - created
+                    - updated
+                    - failed
+                    additionalProperties: false
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        index:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                          description: Zero-based index of the failed item.
+                        externalId:
+                          type: string
+                        error:
+                          type: object
+                          properties:
+                            code:
+                              type: string
+                              description: Stable machine-readable error code (snake_case).
+                            message:
+                              type: string
+                          required:
+                          - code
+                          - message
+                          additionalProperties: false
+                      required:
+                      - index
+                      - error
+                      additionalProperties: false
+                required:
+                - summary
+                - errors
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/cdp/custom-objects/types:
+    get:
+      operationId: cdp_custom_object_types_list
+      summary: List object types
+      description: List the organization's custom object types.
+      tags:
+      - CDP Custom Objects
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: Unique machine name for the type.
+                        displayName:
+                          type: string
+                        description:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                      required:
+                      - name
+                      - displayName
+                      - description
+                      additionalProperties: false
+                  next_cursor:
+                    type: 'null'
+                required:
+                - data
+                - next_cursor
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+    post:
+      operationId: cdp_custom_object_types_create
+      summary: Create object type
+      description: Create a custom object type — required before you can upsert objects of that kind.
+      tags:
+      - CDP Custom Objects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $schema: https://json-schema.org/draft/2020-12/schema
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  description: Unique machine name for the type (e.g. "order").
+                displayName:
+                  type: string
+                  minLength: 1
+                  maxLength: 255
+                  description: Human-readable label for the type.
+                description:
+                  description: Optional description of what this type represents.
+                  type: string
+                  minLength: 1
+                  maxLength: 1000
+              required:
+              - name
+              - displayName
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Unique machine name for the type.
+                  displayName:
+                    type: string
+                  description:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  created:
+                    type: boolean
+                required:
+                - name
+                - displayName
+                - description
+                - created
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/cdp/custom-objects/types/{type}:
+    get:
+      operationId: cdp_custom_object_types_get
+      summary: Get object type
+      description: Read one custom object type by name.
+      tags:
+      - CDP Custom Objects
+      parameters:
+      - name: type
+        in: path
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The custom object type name.
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Unique machine name for the type.
+                  displayName:
+                    type: string
+                  description:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                required:
+                - name
+                - displayName
+                - description
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Organization API key, sent as `Authorization: Bearer boom_org_...`.'
