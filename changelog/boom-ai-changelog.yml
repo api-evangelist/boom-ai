@@ -1,0 +1,23 @@
+generated: '2026-07-18'
+method: searched
+source: https://useboom.ai/changelog
+scheme: date-based
+current_version: v1
+notes: >-
+  Boom publishes a dated product changelog (no semantic version numbers). The API
+  itself is served under /api/v1. Recent window captured below.
+entries:
+  - date: '2026-07-16'
+    highlights:
+      - Minor improvements — nested response field selection in journey nodes and contact renaming updates.
+  - date: '2026-07-15'
+    highlights:
+      - Send customer documents to your own systems from a journey (WhatsApp document forwarding via HTTP nodes).
+      - Use extracted conversation data in your journeys (agent-extracted fields as journey variables).
+      - Add extra phone numbers and emails to a contact (expanded contact matching).
+      - Minor improvements — organization switcher, source previews, HTTP node enhancements.
+  - date: '2026-07-14'
+    highlights:
+      - The Concierge reads your PDF attachments (text extraction from WhatsApp documents).
+      - A self-serve Sources page for your data (consolidated data integrations management).
+      - 'Minor improvements — API rate limits raised to 1,000 requests/minute; segment accuracy improved.'

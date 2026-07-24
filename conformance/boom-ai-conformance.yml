@@ -1,0 +1,26 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/boom-ai-openapi-original.json
+standards:
+  - id: openapi-3.1
+    conforms: true
+    evidence: openapi document declares openapi 3.1.0
+  - id: http-bearer-auth
+    conforms: true
+    evidence: components.securitySchemes bearerAuth type http scheme bearer, applied globally
+  - id: oauth2
+    conforms: false
+    evidence: no oauth2 security scheme in the REST spec (MCP uses interactive OAuth login)
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: errors use a custom '{error:{code,message}}' envelope, not application/problem+json
+  - id: cursor-pagination
+    conforms: true
+    evidence: list operations accept cursor+limit and return data+next_cursor
+  - id: idempotency
+    conforms: true
+    evidence: upsert-by-externalId writes and /batch endpoints documented as idempotent and safely retryable
+  - id: rate-limit-headers
+    conforms: true
+    evidence: 429 responses document Retry-After and X-RateLimit-* headers (1000 req/min per key)
+compliance_program: none published

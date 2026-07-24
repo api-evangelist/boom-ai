@@ -1,0 +1,19 @@
+generated: '2026-07-18'
+method: searched
+source: https://useboom.ai/changelog
+versioning:
+  scheme: uri-path
+  current: v1
+  base_path: /api/v1
+  docs: https://docs.useboom.ai
+deprecation:
+  policy_url: null
+  sunset_header: false
+  note: No published deprecation policy or Sunset/Deprecation header support found; no operations are marked deprecated in the OpenAPI.
+sla:
+  url: null
+  uptime_target: null
+status_page: https://status.useboom.ai/
+status_provider: Better Stack
+changelog: https://useboom.ai/changelog
+deprecated_operations: []

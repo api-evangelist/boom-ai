@@ -1,0 +1,21 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.useboom.ai
+model:
+  separation: separate development organization
+  live_host: https://www.useboom.ai
+  sandbox_host: https://dev.useboom.ai
+  description: >-
+    Boom separates test from live at the organization/host level rather than with a
+    key-prefix mode. Use a development-organization API key against the
+    https://dev.useboom.ai host (REST and MCP) to exercise the API without touching a
+    production organization's data or sending real messages.
+api_keys:
+  prefix: boom_org_
+  note: Organization API key; a development organization issues its own key for the sandbox host.
+mcp_sandbox: https://dev.useboom.ai/mcp
+caution: >-
+  On the live host, launching an initiative or adding participants sends real outbound
+  WhatsApp/SMS/email to real customers. Rehearse initiative and journey flows against
+  the development organization first.
+test_values: none published

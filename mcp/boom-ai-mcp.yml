@@ -1,0 +1,28 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.useboom.ai/use-mcp
+status: published
+server:
+  name: boom
+  transport: http
+  url: https://www.useboom.ai/mcp
+  sandbox_url: https://dev.useboom.ai/mcp
+authentication:
+  type: oauth-interactive
+  notes: >-
+    No API key. The first use opens a browser window to sign in to Boom — the same
+    login as the dashboard. Access is scoped to your organization; destructive actions
+    (e.g. launching an initiative or adding participants, which send real WhatsApp
+    messages) require org-admin permissions.
+install:
+  claude_code: claude mcp add --transport http boom https://www.useboom.ai/mcp
+  cursor: add to .cursor/mcp.json as an http server pointing at the URL
+  vscode: add to .vscode/mcp.json as type http
+  claude_desktop: Settings -> Connectors -> Add custom connector -> paste the URL
+capabilities: >-
+  Exposes the full public REST surface as MCP tools: CDP (people, events, custom
+  objects, relationships, sources), segment authoring and evaluation, initiative and
+  participant lifecycle, journey reading, and WhatsApp template operations.
+warning: >-
+  Adding participants to an initiative and launching one send real WhatsApp messages to
+  real customers — review tool permissions before autonomous operation.

@@ -1,0 +1,32 @@
+{
+  "provider": "boom-ai",
+  "sources": [
+    "boom-ai-cdp-custom-objects-api-openapi.yml",
+    "boom-ai-cdp-events-api-openapi.yml",
+    "boom-ai-cdp-people-api-openapi.yml",
+    "boom-ai-cdp-relationships-api-openapi.yml",
+    "boom-ai-cdp-sources-api-openapi.yml",
+    "boom-ai-http-credentials-api-openapi.yml",
+    "boom-ai-initiatives-api-openapi.yml",
+    "boom-ai-journeys-api-openapi.yml",
+    "boom-ai-segments-api-openapi.yml",
+    "boom-ai-whatsapp-templates-api-openapi.yml"
+  ],
+  "outputs": [
+    "boom-ai-cdp-custom-objects-api-openapi.yml",
+    "boom-ai-cdp-events-api-openapi.yml",
+    "boom-ai-cdp-people-api-openapi.yml",
+    "boom-ai-cdp-relationships-api-openapi.yml",
+    "boom-ai-cdp-sources-api-openapi.yml",
+    "boom-ai-http-credentials-api-openapi.yml",
+    "boom-ai-initiatives-api-openapi.yml",
+    "boom-ai-journeys-api-openapi.yml",
+    "boom-ai-segments-api-openapi.yml",
+    "boom-ai-whatsapp-templates-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}

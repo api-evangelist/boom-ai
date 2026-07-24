@@ -1,0 +1,91 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/boom-ai-openapi-original.json
+notes: >-
+  Entity graph derived from the REST resource surface and its id-reference fields.
+  Records are addressed by caller-supplied `externalId` (people, events, custom
+  objects) or server ids (initiatives, journeys, segments by slug).
+entities:
+  - name: Person
+    key: externalId
+    domain: /api/v1/cdp/people
+  - name: CustomObjectType
+    key: type
+    domain: /api/v1/cdp/custom-objects/types
+  - name: CustomObject
+    key: externalId (within a type)
+    domain: /api/v1/cdp/custom-objects
+  - name: Event
+    key: externalId
+    domain: /api/v1/cdp/events
+  - name: RelationshipType
+    key: relationshipTypeId
+    domain: /api/v1/cdp/relationship-types
+  - name: Relationship
+    domain: /api/v1/cdp/relationships
+  - name: Source
+    domain: /api/v1/cdp/sources
+  - name: Initiative
+    key: id
+    domain: /api/v1/initiatives
+  - name: Participant
+    key: participantId
+    domain: /api/v1/initiatives/{id}/participants
+  - name: Journey
+    key: journeyId
+    domain: /api/v1/journeys
+  - name: Segment
+    key: slug
+    domain: /api/v1/segments
+  - name: Template
+    key: id
+    domain: /api/v1/templates
+  - name: WhatsAppNumber
+    domain: /api/v1/whatsapp-numbers
+  - name: HttpCredential
+    domain: /api/v1/http-credentials
+relationships:
+  - from: CustomObject
+    to: CustomObjectType
+    kind: belongs_to
+    via: type
+  - from: Event
+    to: Person
+    kind: belongs_to
+    via: subject/person externalId
+  - from: Event
+    to: CustomObject
+    kind: belongs_to
+    via: optional object subject
+  - from: Relationship
+    to: RelationshipType
+    kind: belongs_to
+    via: relationshipTypeId
+  - from: Relationship
+    to: Person
+    kind: references
+    via: anchor externalId
+  - from: Relationship
+    to: CustomObject
+    kind: references
+    via: target externalId
+  - from: Participant
+    to: Initiative
+    kind: belongs_to
+    via: initiative id
+  - from: Participant
+    to: Person
+    kind: references
+    via: person externalId
+  - from: Journey
+    to: Initiative
+    kind: belongs_to
+    via: initiative id
+  - from: Segment
+    to: Person
+    kind: has_many
+    via: members
+  - from: Initiative
+    to: Template
+    kind: has_many
+    via: round templates (WhatsApp)

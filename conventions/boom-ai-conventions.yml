@@ -1,0 +1,57 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.useboom.ai
+derived_from: openapi/boom-ai-openapi-original.json
+authentication:
+  style: bearer-token
+  header: 'Authorization: Bearer boom_org_...'
+  scope: per-organization API key
+  docs: https://docs.useboom.ai/quickstart
+idempotency:
+  supported: true
+  model: >-
+    Idempotency is by design through upsert-by-external-id rather than a request-level
+    Idempotency-Key header. Every write is keyed on your own stable `externalId`
+    (for people, events, and custom objects): re-sending the same record updates in
+    place instead of duplicating. Re-recording an event with the same external id
+    returns `created: false`. Batch upsert/link endpoints are explicitly documented as
+    "idempotent and safely retryable". Soft-delete, link, unlink, and stop-participant
+    operations are also idempotent.
+  key_field: externalId
+  retriable: true
+pagination:
+  style: cursor
+  request_params:
+    - cursor   # opaque token from a previous response's next_cursor; omit for first page
+    - limit
+  response_fields:
+    - data
+    - next_cursor
+  ordering: newest-first
+rate_limiting:
+  limit: 1000 requests/minute per API key
+  headers:
+    - X-RateLimit-*
+    - Retry-After
+  exceeded_status: 429
+  docs_note: raised to 1,000 requests/minute (changelog 2026-07-14)
+batch:
+  endpoints: /batch on people, custom-objects, events, relationships
+  max_records: 1000
+  note: >-
+    Batch event ingest does NOT trigger journey enrollment (bulk/historical loads);
+    the single record-event endpoint is the real-time path that does.
+error_envelope:
+  format: custom-json
+  shape: '{ "error": { "code": "<snake_case>", "message": "<human readable>" } }'
+  problem_json: false
+  see: errors/boom-ai-error-codes.yml
+versioning:
+  scheme: uri-path
+  current: v1
+  base_path: /api/v1
+cross_links:
+  authentication: authentication/boom-ai-authentication.yml
+  errors: errors/boom-ai-error-codes.yml
+  lifecycle: lifecycle/boom-ai-lifecycle.yml
+  sandbox: sandbox/boom-ai-sandbox.yml

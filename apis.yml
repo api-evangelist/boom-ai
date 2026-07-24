@@ -1,22 +1,266 @@
 aid: boom-ai
 name: Boom Ai
-description: Boom Ai is a company surfaced as a portfolio company of y-combinator and added to the API
-  Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+description: >-
+  Boom AI (useboom.ai) is a Y Combinator-backed (Fall 2025) San Francisco company
+  building "an AI workforce for your customers" — autonomous agents that hold real,
+  multi-turn conversations over SMS, email, WhatsApp, and phone in 50+ languages to
+  run collections and payment recovery, churn recovery, retention monitoring, customer
+  onboarding, sales qualification, and market research for e-commerce and B2B brands.
+  Boom exposes one uniform public REST API — and a hosted MCP server over the same
+  capabilities — covering a customer data platform (people, custom objects, behavioral
+  events, relationships, sources), segments, initiatives and participants, and journey
+  authoring. Authentication is a Bearer organization API key (boom_org_...); the API
+  uses cursor pagination, 1,000 requests/minute rate limits with X-RateLimit-*/Retry-After
+  signaling, and idempotent upsert plus up-to-1000-record batch endpoints.
 url: https://raw.githubusercontent.com/api-evangelist/boom-ai/refs/heads/main/apis.yml
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://useboom.ai/logo.svg
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - y-combinator
-x-tier: stub
+x-tier: enriched
 x-tier-reason: portfolio-lead
+x-founders:
+- Juan Casian (CEO)
+- Sergio Garcia (CPO)
+- Jose Toscano (CTO)
+x-yc-batch: Fall 2025
+x-location: San Francisco, CA
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-18'
 tags:
 - Company
-apis: []
+- Artificial Intelligence
+- Conversational AI
+- Customer Engagement
+- Customer Data Platform
+- Messaging
+- WhatsApp
+- SMS
+- Marketing Automation
+- E-commerce
+- Agents
+- MCP
+apis:
+- aid: boom-ai:boom-ai-cdp-custom-objects-api
+  name: Boom Ai CDP Custom Objects API
+  description: The CDP Custom Objects API from Boom Ai — 5 operation(s) for cdp custom objects.
+  humanURL: https://docs.useboom.ai
+  baseURL: https://www.useboom.ai
+  tags:
+  - CDP Custom Objects
+  properties:
+  - type: OpenAPI
+    url: openapi/boom-ai-cdp-custom-objects-api-openapi.yml
+  - type: Documentation
+    url: https://docs.useboom.ai
+  - type: APIReference
+    url: https://docs.useboom.ai/api-reference/overview
+- aid: boom-ai:boom-ai-cdp-events-api
+  name: Boom Ai CDP Events API
+  description: The CDP Events API from Boom Ai — 3 operation(s) for cdp events.
+  humanURL: https://docs.useboom.ai
+  baseURL: https://www.useboom.ai
+  tags:
+  - CDP Events
+  properties:
+  - type: OpenAPI
+    url: openapi/boom-ai-cdp-events-api-openapi.yml
+  - type: Documentation
+    url: https://docs.useboom.ai
+  - type: APIReference
+    url: https://docs.useboom.ai/api-reference/overview
+- aid: boom-ai:boom-ai-cdp-people-api
+  name: Boom Ai CDP People API
+  description: The CDP People API from Boom Ai — 4 operation(s) for cdp people.
+  humanURL: https://docs.useboom.ai
+  baseURL: https://www.useboom.ai
+  tags:
+  - CDP People
+  properties:
+  - type: OpenAPI
+    url: openapi/boom-ai-cdp-people-api-openapi.yml
+  - type: Documentation
+    url: https://docs.useboom.ai
+  - type: APIReference
+    url: https://docs.useboom.ai/api-reference/overview
+- aid: boom-ai:boom-ai-cdp-relationships-api
+  name: Boom Ai CDP Relationships API
+  description: The CDP Relationships API from Boom Ai — 4 operation(s) for cdp relationships.
+  humanURL: https://docs.useboom.ai
+  baseURL: https://www.useboom.ai
+  tags:
+  - CDP Relationships
+  properties:
+  - type: OpenAPI
+    url: openapi/boom-ai-cdp-relationships-api-openapi.yml
+  - type: Documentation
+    url: https://docs.useboom.ai
+  - type: APIReference
+    url: https://docs.useboom.ai/api-reference/overview
+- aid: boom-ai:boom-ai-cdp-sources-api
+  name: Boom Ai CDP Sources API
+  description: The CDP Sources API from Boom Ai — 1 operation(s) for cdp sources.
+  humanURL: https://docs.useboom.ai
+  baseURL: https://www.useboom.ai
+  tags:
+  - CDP Sources
+  properties:
+  - type: OpenAPI
+    url: openapi/boom-ai-cdp-sources-api-openapi.yml
+  - type: Documentation
+    url: https://docs.useboom.ai
+  - type: APIReference
+    url: https://docs.useboom.ai/api-reference/overview
+- aid: boom-ai:boom-ai-http-credentials-api
+  name: Boom Ai HTTP credentials API
+  description: The HTTP credentials API from Boom Ai — 1 operation(s) for http credentials.
+  humanURL: https://docs.useboom.ai
+  baseURL: https://www.useboom.ai
+  tags:
+  - HTTP credentials
+  properties:
+  - type: OpenAPI
+    url: openapi/boom-ai-http-credentials-api-openapi.yml
+  - type: Documentation
+    url: https://docs.useboom.ai
+  - type: APIReference
+    url: https://docs.useboom.ai/api-reference/overview
+- aid: boom-ai:boom-ai-initiatives-api
+  name: Boom Ai Initiatives API
+  description: The Initiatives API from Boom Ai — 14 operation(s) for initiatives.
+  humanURL: https://docs.useboom.ai
+  baseURL: https://www.useboom.ai
+  tags:
+  - Initiatives
+  properties:
+  - type: OpenAPI
+    url: openapi/boom-ai-initiatives-api-openapi.yml
+  - type: Documentation
+    url: https://docs.useboom.ai
+  - type: APIReference
+    url: https://docs.useboom.ai/api-reference/overview
+- aid: boom-ai:boom-ai-journeys-api
+  name: Boom Ai Journeys API
+  description: The Journeys API from Boom Ai — 16 operation(s) for journeys.
+  humanURL: https://docs.useboom.ai
+  baseURL: https://www.useboom.ai
+  tags:
+  - Journeys
+  properties:
+  - type: OpenAPI
+    url: openapi/boom-ai-journeys-api-openapi.yml
+  - type: Documentation
+    url: https://docs.useboom.ai
+  - type: APIReference
+    url: https://docs.useboom.ai/api-reference/overview
+- aid: boom-ai:boom-ai-segments-api
+  name: Boom Ai Segments API
+  description: The Segments API from Boom Ai — 7 operation(s) for segments.
+  humanURL: https://docs.useboom.ai
+  baseURL: https://www.useboom.ai
+  tags:
+  - Segments
+  properties:
+  - type: OpenAPI
+    url: openapi/boom-ai-segments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.useboom.ai
+  - type: APIReference
+    url: https://docs.useboom.ai/api-reference/overview
+- aid: boom-ai:boom-ai-whatsapp-templates-api
+  name: Boom Ai WhatsApp templates API
+  description: The WhatsApp templates API from Boom Ai — 3 operation(s) for whatsapp templates.
+  humanURL: https://docs.useboom.ai
+  baseURL: https://www.useboom.ai
+  tags:
+  - WhatsApp templates
+  properties:
+  - type: OpenAPI
+    url: openapi/boom-ai-whatsapp-templates-api-openapi.yml
+  - type: Documentation
+    url: https://docs.useboom.ai
+  - type: APIReference
+    url: https://docs.useboom.ai/api-reference/overview
+common:
+- type: AgenticAccess
+  url: agentic-access/boom-ai-agentic-access.yml
+- type: DomainSecurity
+  url: security/boom-ai-domain-security.yml
+- type: Authentication
+  url: authentication/boom-ai-authentication.yml
+- type: DeveloperPortal
+  url: https://docs.useboom.ai
+- type: Documentation
+  url: https://docs.useboom.ai
+- type: APIReference
+  url: https://docs.useboom.ai/api-reference/overview
+- type: GettingStarted
+  url: https://docs.useboom.ai/quickstart
+- type: Blog
+  url: https://useboom.ai/blog
+- type: Pricing
+  url: https://useboom.ai/pricing
+- type: SignUp
+  url: https://useboom.ai/demo
+- type: Login
+  url: https://app.useboom.ai
+- type: Support
+  url: mailto:support@useboom.ai
+- type: TermsOfService
+  url: https://drive.google.com/file/d/1SlTp1_QWhVASpbxncSj1NpmFqiiGBcF1/view
+- type: PrivacyPolicy
+  url: https://drive.google.com/file/d/1ITWbsA8ZmyhinJYYr4ezRdhNe-MWQBC_/view
+- type: OpenAPI
+  url: openapi/boom-ai-openapi-original.json
+- type: MCPServer
+  url: mcp/boom-ai-mcp.yml
+- type: LLMsTxt
+  url: llms/boom-ai-llms.txt
+- type: Overlay
+  url: overlays/boom-ai-openapi-overlay.yaml
+- type: Conformance
+  url: conformance/boom-ai-conformance.yml
+- type: ErrorCatalog
+  url: errors/boom-ai-error-codes.yml
+- type: Lifecycle
+  url: lifecycle/boom-ai-lifecycle.yml
+- type: StatusPage
+  url: https://status.useboom.ai/
+- type: Sandbox
+  url: sandbox/boom-ai-sandbox.yml
+- type: Conventions
+  url: conventions/boom-ai-conventions.yml
+- type: Idempotency
+  url: conventions/boom-ai-conventions.yml
+- type: RateLimits
+  url: conventions/boom-ai-conventions.yml
+- type: ChangeLog
+  url: changelog/boom-ai-changelog.yml
+- type: DataModel
+  url: data-model/boom-ai-data-model.yml
+- type: AgentSkill
+  url: skills/_index.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+x-enrichment:
+  date: '2026-07-19'
+  status: backfilled
+  pass: local-v1
+  note: backfilled from .gitignore signal + verified work evidence

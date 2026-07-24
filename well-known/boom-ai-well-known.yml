@@ -1,0 +1,22 @@
+generated: '2026-07-18'
+method: searched
+source: probed /.well-known/ on Boom hosts
+hosts:
+  - host: https://www.useboom.ai
+    documents:
+      - {path: /.well-known/security.txt, status: 404}
+      - {path: /.well-known/openid-configuration, status: 404}
+      - {path: /.well-known/oauth-authorization-server, status: 404}
+      - {path: /.well-known/api-catalog, status: 404}
+      - {path: /.well-known/ai-plugin.json, status: 404}
+  - host: https://docs.useboom.ai
+    documents:
+      - {path: /.well-known/security.txt, status: 404}
+      - {path: /.well-known/openid-configuration, status: 404}
+      - {path: /.well-known/oauth-authorization-server, status: 404}
+      - {path: /.well-known/api-catalog, status: 404}
+      - {path: /.well-known/ai-plugin.json, status: 404}
+notes: >-
+  No /.well-known/ discovery documents are published on either host as of the probe
+  date. The hosted MCP server at https://www.useboom.ai/mcp returns 401 (auth required)
+  but exposes no OAuth protected-resource metadata at a probed .well-known path.

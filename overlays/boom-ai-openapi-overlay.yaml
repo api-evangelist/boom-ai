@@ -1,0 +1,26 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Boom API
+  version: 1.0.0
+extends: openapi/boom-ai-openapi-original.json
+actions:
+  - target: $.info
+    update:
+      x-apievangelist-provider: boom-ai
+      x-apievangelist-reviewed: '2026-07-18'
+      x-apievangelist-artifacts:
+        authentication: authentication/boom-ai-authentication.yml
+        conventions: conventions/boom-ai-conventions.yml
+        errors: errors/boom-ai-error-codes.yml
+        data-model: data-model/boom-ai-data-model.yml
+        mcp: mcp/boom-ai-mcp.yml
+        agentic-access: agentic-access/boom-ai-agentic-access.yml
+  - target: $.info
+    update:
+      x-apievangelist-conventions:
+        auth: bearer organization API key (boom_org_...)
+        pagination: cursor + limit -> data + next_cursor
+        idempotency: upsert-by-externalId; /batch endpoints idempotent and retryable
+        rate_limit: 1000 requests/minute per key; X-RateLimit-* + Retry-After
+        error_envelope: '{ "error": { "code": "...", "message": "..." } }'
+        sandbox: https://dev.useboom.ai with a development-organization key

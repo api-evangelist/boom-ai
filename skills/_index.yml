@@ -1,0 +1,16 @@
+generated: '2026-07-18'
+method: generated
+source: openapi/boom-ai-openapi-original.json
+skills:
+  - file: boom-ai-ingest-people-and-events.md
+    name: Ingest people and behavioral events into Boom
+    api: openapi/boom-ai-openapi-original.json
+    operations: [cdp_people_upsert, cdp_people_batch_upsert, cdp_people_get, cdp_events_record, cdp_events_batch_record, cdp_custom_objects_upsert]
+  - file: boom-ai-run-whatsapp-initiative.md
+    name: Create and launch a WhatsApp initiative
+    api: openapi/boom-ai-openapi-original.json
+    operations: [initiatives_create, initiatives_templates_set, initiatives_launch, initiatives_participants_add, initiatives_participant_messages_list, initiatives_summary, initiatives_participants_stop]
+  - file: boom-ai-build-and-evaluate-segment.md
+    name: Build, validate, and evaluate a Boom segment
+    api: openapi/boom-ai-openapi-original.json
+    operations: [segments_catalog, segments_validate, segments_preview, segments_create, segments_evaluate, segments_members_list]

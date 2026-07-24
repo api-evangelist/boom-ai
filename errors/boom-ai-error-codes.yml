@@ -1,0 +1,50 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/boom-ai-openapi-original.json
+format: custom-json
+envelope:
+  shape: '{ "error": { "code": "<snake_case>", "message": "<human readable>" } }'
+  fields:
+    - name: error.code
+      description: Stable machine-readable error code (snake_case).
+    - name: error.message
+      description: Human-readable explanation.
+  problem_json: false
+notes: >-
+  Boom returns a uniform error envelope on every 4xx/5xx rather than RFC 9457
+  problem+json. Status codes below are the documented HTTP responses across all
+  operations; `error.code` carries the stable machine-readable reason.
+problems:
+  - status: 400
+    title: Bad request
+    description: >-
+      Invalid Content-Type, malformed JSON, or schema validation failure — the request
+      cannot proceed.
+    remediation: Send application/json with a body matching the operation schema.
+  - status: 401
+    title: Unauthorized
+    description: Missing, malformed, or revoked API key.
+    remediation: 'Send a valid organization key as Authorization: Bearer boom_org_...'
+  - status: 404
+    title: Not found
+    description: The resource does not exist in this organization.
+  - status: 409
+    title: Conflict
+    description: >-
+      Conflicts with the current state (duplicates, wrong lifecycle state — e.g.
+      editing a non-draft initiative).
+  - status: 422
+    title: Unprocessable entity
+    description: The request is well-formed but semantically invalid.
+  - status: 429
+    title: Rate limit exceeded
+    description: >-
+      Exceeded 1000 requests/minute per key. Honor the Retry-After and X-RateLimit-*
+      headers and back off.
+    remediation: Retry after the Retry-After interval; batch writes via the /batch endpoints.
+  - status: 500
+    title: Internal server error
+    description: Unexpected server error (the API never leaks internals).
+  - status: 503
+    title: Service unavailable
+    description: Transient error — retry with a narrower request.
