@@ -225,7 +225,7 @@ common:
 - type: PrivacyPolicy
   url: https://drive.google.com/file/d/1ITWbsA8ZmyhinJYYr4ezRdhNe-MWQBC_/view
 - type: OpenAPI
-  url: openapi/boom-ai-openapi-original.json
+  url: openapi/_original/boom-ai-openapi-original.json
 - type: MCPServer
   url: mcp/boom-ai-mcp.yml
 - type: LLMsTxt
