@@ -40,7 +40,7 @@ x-yc-batch: Fall 2025
 x-location: San Francisco, CA
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-18'
+modified: '2026-08-13'
 tags:
 - Company
 - Artificial Intelligence
@@ -247,20 +247,42 @@ common:
 - type: Idempotency
   url: conventions/boom-ai-conventions.yml
 - type: RateLimits
-  url: conventions/boom-ai-conventions.yml
+  url: rate-limits/boom-ai-rate-limits.yml
 - type: ChangeLog
   url: changelog/boom-ai-changelog.yml
 - type: DataModel
   url: data-model/boom-ai-data-model.yml
 - type: AgentSkill
   url: skills/_index.yml
+- type: AgentCard
+  url: a2a/boom-ai-a2a.yml
+- type: ToolCrosswalk
+  url: mcp/boom-ai-tool-crosswalk.yml
+- type: WellKnown
+  url: well-known/boom-ai-well-known.yml
+- type: OAuthScopes
+  url: scopes/boom-ai-scopes.yml
+- type: Packages
+  url: packages/boom-ai-packages.yml
+- type: Plans
+  url: plans/boom-ai-plans-pricing.yml
+- type: Webhooks
+  url: asyncapi/boom-ai-webhooks.yml
+- type: TrustCenter
+  url: security/boom-ai-trust-center.yml
+- type: Compliance
+  url: https://trust.useboom.ai/
+- type: GitHubOrganization
+  url: https://github.com/BOOM-TML
+- type: SourceCode
+  url: https://github.com/BOOM-TML/skills
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 x-enrichment:
-  date: '2026-07-19'
-  status: backfilled
+  date: '2026-08-13'
+  status: enriched
+  artifacts_added: 24
   pass: local-v1
-  note: backfilled from .gitignore signal + verified work evidence
