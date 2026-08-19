@@ -9,9 +9,22 @@ notes: >-
   hosted MCP server authenticates instead via interactive Boom dashboard login (OAuth),
   not the API key. No OAuth2 scopes surface — access is scoped to the organization and
   destructive actions require an org admin.
+mcp_authentication:
+  type: oauth2
+  authorization_server: https://clerk.useboom.ai
+  protected_resource_metadata: https://www.useboom.ai/.well-known/oauth-protected-resource/mcp
+  flow: authorizationCode (+ refresh_token), dynamic client registration
+  scopes: [profile, email, 'user:org:read']
+  see: scopes/boom-ai-scopes.yml
+  note: >-
+    Two different auth models for two surfaces. REST = static organization Bearer key.
+    MCP = interactive OAuth sign-in with no key at all. An agent reaching Boom over MCP
+    never handles a credential; one reaching it over REST holds a long-lived org-wide key
+    with no scope narrowing available.
 summary:
   types:
   - http
+  - oauth2   # MCP surface only
 schemes:
 - name: bearerAuth
   type: http

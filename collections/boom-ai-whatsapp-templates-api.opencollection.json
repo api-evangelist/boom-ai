@@ -1,0 +1,96 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Boom CDP Custom Objects WhatsApp templates API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "WhatsApp templates",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List templates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/templates",
+            "params": [
+              {
+                "name": "status",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "category",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "contentType",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List your WhatsApp templates and each one's approval status. Reviews are async (~24–48h) — re-read to see updates."
+        },
+        {
+          "info": {
+            "name": "Create template",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/templates",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a WhatsApp template and submit it for WhatsApp approval, which is asynchronous (~24–48h). Example (TEXT): `{ \"name\": \"order_shipped\", \"language\": \"es\", \"category\": \"UTILITY\", \"contentType\": \"TEXT\", \"content\": { \"body\": \"Hola {{1}}, tu pedido ya salió.\" }, \"variables\": { \"1\": \"Ana\" } }`. Example with buttons (CALL_TO_ACTION): `{ \"name\": \"order_shipped_cta\", \"language\": \"es\", \"category\": \"UTILITY\", \"contentType\": \"CALL_TO_ACTION\", \"content\": { \"body\": \"Hola {{1}}, tu pedido ya salió.\", \"act"
+        },
+        {
+          "info": {
+            "name": "Get template",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/templates/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get one WhatsApp template by id, including its approval status and any rejection reason."
+        },
+        {
+          "info": {
+            "name": "List numbers",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/whatsapp-numbers"
+          },
+          "docs": "List the WhatsApp numbers connected to your organization. Use them when creating templates."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

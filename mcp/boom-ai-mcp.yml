@@ -1,4 +1,4 @@
-generated: '2026-07-18'
+generated: '2026-08-13'
 method: searched
 source: https://docs.useboom.ai/use-mcp
 status: published
@@ -9,20 +9,53 @@ server:
   sandbox_url: https://dev.useboom.ai/mcp
 authentication:
   type: oauth-interactive
+  authorization_server: https://clerk.useboom.ai
+  protected_resource_metadata: https://www.useboom.ai/.well-known/oauth-protected-resource/mcp
+  scopes: [profile, email, 'user:org:read']
+  dynamic_client_registration: true
   notes: >-
-    No API key. The first use opens a browser window to sign in to Boom — the same
-    login as the dashboard. Access is scoped to your organization; destructive actions
-    (e.g. launching an initiative or adding participants, which send real WhatsApp
-    messages) require org-admin permissions.
+    No API key. The first use opens a browser window to sign in to Boom — the same login
+    as the dashboard. An unauthenticated POST returns 401 with a WWW-Authenticate
+    challenge naming the RFC 9728 resource-metadata document, which resolves to a
+    Clerk-operated authorization server on Boom's own subdomain. Access is scoped to your
+    organization; destructive actions (e.g. launching an initiative or adding
+    participants, which send real WhatsApp messages) require org-admin permissions. See
+    scopes/boom-ai-scopes.yml.
 install:
   claude_code: claude mcp add --transport http boom https://www.useboom.ai/mcp
   cursor: add to .cursor/mcp.json as an http server pointing at the URL
   vscode: add to .vscode/mcp.json as type http
   claude_desktop: Settings -> Connectors -> Add custom connector -> paste the URL
-capabilities: >-
-  Exposes the full public REST surface as MCP tools: CDP (people, events, custom
-  objects, relationships, sources), segment authoring and evaluation, initiative and
-  participant lifecycle, journey reading, and WhatsApp template operations.
+  with_skills: npx @useboom/skills-setup   # installs Boom's Agent Skills AND registers this server
+capabilities: 'Exposes the full public REST surface as MCP tools: CDP (people, events, custom objects,
+  relationships, sources), segment authoring and evaluation, initiative and participant lifecycle, journey
+  authoring (draft, nodes, edges, trigger, validate, publish), extraction schemas, and WhatsApp template
+  operations.'
+tools:
+  count_named: 62
+  source: >-
+    Tool names are the provider's own, harvested from its published Agent Skills; each one
+    matches an OpenAPI operationId character-for-character. Full binding in
+    mcp/boom-ai-tool-crosswalk.yml.
+  schemas: >-
+    Input schemas are NOT readable anonymously — tools/list is auth-gated. Each tool's real
+    input contract is the parameters + requestBody of its backing OpenAPI operation, which
+    Boom guarantees is identical (https://docs.useboom.ai/one-surface).
+known_gaps:
+  - The journey email-send step is absent from the authoring catalog, so an agent cannot add one over MCP; build it in the Boom app.
+  - Data-source sync (PostgreSQL/MySQL/Shopify/Skio) is UI-only and on neither surface.
 warning: >-
   Adding participants to an initiative and launching one send real WhatsApp messages to
   real customers — review tool permissions before autonomous operation.
+deployment:
+  mode: remote
+  endpoint: https://www.useboom.ai/mcp
+  auth: oauth
+  verified: probed
+  probe: gated
+  probe_detail: 'POST tools/list -> HTTP 401 {"error":"invalid_token"} with resource_metadata challenge'
+  checked: '2026-08-13'
+x-evidence:
+  - {url: 'https://www.useboom.ai/mcp', status: 401, checked: '2026-08-13'}
+  - {url: 'https://www.useboom.ai/.well-known/oauth-protected-resource/mcp', status: 200, checked: '2026-08-13'}
+  - {url: 'https://docs.useboom.ai/use-mcp.md', status: 200, checked: '2026-08-13'}

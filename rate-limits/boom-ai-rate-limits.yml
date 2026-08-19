@@ -1,0 +1,40 @@
+generated: '2026-08-13'
+method: searched
+source: https://docs.useboom.ai/rate-limits-and-errors
+limit_count: 2
+exceeded_status: 429
+algorithm: sliding window
+rate_limits:
+  - name: Standard endpoints
+    scope: per-api-key
+    limit: 1000
+    window: 1m
+    burst: null
+    applies_to: every endpoint except /batch
+    note: 1000 requests per minute per API key, sliding window. Raised to this figure on 2026-07-14 (changelog).
+  - name: Batch endpoints
+    scope: per-api-key
+    limit: 20
+    window: 1m
+    burst: null
+    applies_to: /batch on people, custom-objects, events, relationships
+    note: >-
+      Lower request ceiling because one batch call performs up to 1000 operations, so the
+      per-operation ceiling stays comparable. A batch body over 1000 items is rejected 400.
+headers:
+  - {name: X-RateLimit-Limit, meaning: Max requests in the window, on: every response}
+  - {name: X-RateLimit-Remaining, meaning: Requests left in the current window, on: every response}
+  - {name: X-RateLimit-Reset, meaning: When the window resets (epoch ms), on: every response}
+  - {name: Retry-After, meaning: Seconds to wait, on: 429 only}
+exhaustion:
+  status: 429
+  body: '{ "error": "Rate limit exceeded" }'
+  error_code: rate_limited
+  retry_guidance: >-
+    Wait Retry-After seconds (or until X-RateLimit-Reset) and retry. Rate-limited requests
+    are rejected before any work happens, so they are always safe to resend.
+agent_note: >-
+  Runtime signal is complete: the three X-RateLimit-* headers are on EVERY response, not
+  just on rejection, so an agent can pace itself before it is throttled rather than after.
+x-evidence:
+  - {url: 'https://docs.useboom.ai/rate-limits-and-errors.md', status: 200, checked: '2026-08-13'}

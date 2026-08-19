@@ -1,0 +1,67 @@
+generated: '2026-08-13'
+method: searched
+source: https://useboom.ai/pricing
+plan_count: 4
+pricing_published: false
+currency: null
+model:
+  type: platform-fee-plus-usage-credits
+  billing_unit: fully automated conversation (weighted by conversation value)
+  seats: none — no per-seat pricing
+  feature_gating: none — the whole product is available on every tier
+  escalations: not charged (a conversation escalated to a human is free)
+  annual_discount: "~15% versus monthly"
+  positioning: >-
+    Boom prices against headcount rather than software, citing $100K–$300K per year for a
+    researcher / CSM / onboarder role.
+plans:
+  - name: Starter
+    price: null
+    price_note: "Talk to us — no figure published"
+    best_for: A first use case
+    channels: Start on one channel
+    volume: Entry volume
+    research: Core research
+    insights: Standard insights
+    support: Email support
+    security: Core security
+  - name: Growth
+    price: null
+    price_note: "Talk to us — no figure published"
+    best_for: A growing customer base
+    channels: Add more channels
+    volume: Higher volume
+    research: Core research
+    insights: Standard insights
+    support: Priority support
+    security: Core security
+  - name: Pro
+    price: null
+    price_note: "Talk to us — no figure published"
+    best_for: Multiple use cases at scale
+    channels: Every channel, shared state
+    volume: High volume
+    research: Deep research and extraction
+    insights: Advanced insights and reports
+    support: Dedicated support
+    security: Advanced controls
+  - name: Enterprise
+    price: null
+    price_note: "Custom — no figure published"
+    best_for: Many teams, one platform
+    channels: Every channel, shared state
+    volume: Custom volume
+    research: Deep research and extraction
+    insights: Advanced insights and reports
+    support: Dedicated team
+    security: SSO, audit, and governance
+note: >-
+  Four named tiers are published with a full feature-comparison table, but NO price
+  appears for any of them — every tier says "Talk to us" and the page answers "Why not
+  just list prices on this page?" in its FAQ. There is no self-serve checkout and no
+  machine-readable pricing or catalog endpoint. What differs across tiers is reach and
+  depth (channels, volume, research depth, support, security controls), not access to
+  features. For an agent or a buyer this is a sales-gated commercial surface: the plan
+  shape is knowable, the cost is not.
+x-evidence:
+  - {url: 'https://useboom.ai/pricing', status: 200, checked: '2026-08-13'}

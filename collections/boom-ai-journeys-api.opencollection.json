@@ -1,0 +1,414 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Boom CDP Custom Objects Journeys API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Journeys",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List journeys",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/journeys",
+            "params": [
+              {
+                "name": "initiativeId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "cursor",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List the organization's journeys, newest first. A journey is the step sequence people move through, attached to an initiative. Read-only."
+        },
+        {
+          "info": {
+            "name": "Create draft",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/journeys",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new draft journey on an initiative from a full graph. The draft is editable and does not run until published (which is done in the app). Omit node positions and the server lays the graph out automatically."
+        },
+        {
+          "info": {
+            "name": "Get journey",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get one journey by id — its trigger and the ordered steps people move through. Read-only, for inspecting setup."
+        },
+        {
+          "info": {
+            "name": "Update draft",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Replace a draft journey's whole graph. Only drafts can be edited; published versions are frozen (edit a live journey in the app to fork a new draft). Omit node positions and the server lays the graph out automatically."
+        },
+        {
+          "info": {
+            "name": "Get journey definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId/definition",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get a journey's full editable graph (all nodes, their config, and connections) so it can be modified and saved back. Unlike journeys_get, this is the complete authoring shape, not the sanitized public summary."
+        },
+        {
+          "info": {
+            "name": "Connect nodes",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId/edges",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Wire an edge from one node to another on a given output handle (the emitted signal, e.g. SENT, REPLIED, YES, case:<id>). A handle can wire to only one node."
+        },
+        {
+          "info": {
+            "name": "Disconnect nodes",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId/edges",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "from",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "to",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "sourceHandle",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Remove edges leaving a node. Narrow by target and/or handle; with neither, all outgoing edges from the node are removed."
+        },
+        {
+          "info": {
+            "name": "Fork journey",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId/fork",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Copy a PUBLISHED journey into a fresh editable draft. The live version keeps running until the new draft is published. Use this to edit a live journey safely."
+        },
+        {
+          "info": {
+            "name": "Message variable catalog",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId/message-variables",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List the variables a SEND_MESSAGE template binding can reference for a journey — the same set the builder offers. Bind a template placeholder to one of the returned `path` values (custom person attributes are `person.<key>`, NOT `attributes.<key>` — that is the DECISION/CASE condition syntax). Pass a journey id or its initiative id."
+        },
+        {
+          "info": {
+            "name": "Add node",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId/nodes",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add one node to a draft journey. Positions are optional (auto-laid-out). Wire it up separately with journeys_connect_nodes."
+        },
+        {
+          "info": {
+            "name": "Update node",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId/nodes/:nodeId",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "nodeId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Update one node's name, position, and/or config (inputs shallow-merge). Use journeys_authoring_catalog for a node kind's input fields."
+        },
+        {
+          "info": {
+            "name": "Delete node",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId/nodes/:nodeId",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "nodeId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Remove one node and every edge connected to it from a draft journey."
+        },
+        {
+          "info": {
+            "name": "Publish journey",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId/publish",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Publish a draft journey so it goes live and starts enrolling people (this begins real outreach). Validates first and requires confirm: true. The trigger is taken from the ENTRY node. Any previously live version is retired."
+        },
+        {
+          "info": {
+            "name": "Set trigger",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://www.useboom.ai/api/v1/journeys/:journeyId/trigger",
+            "params": [
+              {
+                "name": "journeyId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Configure how people enter the journey by updating its ENTRY node: manual, segment (needs segmentId), or cdp_event (needs eventName), with an optional frequency cap."
+        },
+        {
+          "info": {
+            "name": "Node catalog",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/journeys/catalog"
+          },
+          "docs": "Describes every journey node kind — its inputs, its output handles (the signals it can emit), and the rules for connecting nodes. Read this before building or editing a journey."
+        },
+        {
+          "info": {
+            "name": "Condition catalog",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/journeys/condition-catalog"
+          },
+          "docs": "List the person attributes and computed attributes available for DECISION and CASE CONDITIONS, plus the custom object types. Attribute tokens are ready to use as condition selection paths (e.g. attributes.plan, computed.ltv). NOTE: these `attributes.*` tokens are ONLY for DECISION/CASE conditions — SEND_MESSAGE template bindings use a different syntax (`person.<key>`); call journeys_message_variables for those."
+        },
+        {
+          "info": {
+            "name": "Event catalog",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/journeys/event-catalog"
+          },
+          "docs": "List the CDP event names seen for your organization. Use these for a cdp_event trigger, a DISPATCH_EVENT node, or an event-based DECISION condition."
+        },
+        {
+          "info": {
+            "name": "List message channels",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/journeys/message-channels"
+          },
+          "docs": "List the WhatsApp channels a SEND_MESSAGE node can send from. Use a channel id as channelId on the node and to look up its approved templates."
+        },
+        {
+          "info": {
+            "name": "List message templates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/journeys/message-templates",
+            "params": [
+              {
+                "name": "channelId",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List the approved WhatsApp templates a SEND_MESSAGE node can use from a given channel. A template belongs to one channel account, so pass the same channelId you pin on the node."
+        },
+        {
+          "info": {
+            "name": "Validate journey",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/journeys/validate",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Dry-run the publish checks against a journey graph without saving. Returns whether it is valid and the list of issues (errors block publishing; warnings are advisory). Use it to iterate a draft to valid before publishing in the app."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

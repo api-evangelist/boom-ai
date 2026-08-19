@@ -1,22 +1,47 @@
-generated: '2026-07-18'
+generated: '2026-08-13'
 method: searched
-source: probed /.well-known/ on Boom hosts
+source: probed /.well-known/ on every Boom host
 hosts:
   - host: https://www.useboom.ai
     documents:
+      - {path: /.well-known/oauth-protected-resource/mcp, status: 200, file: boom-ai-oauth-protected-resource-mcp.json, spec: RFC 9728}
       - {path: /.well-known/security.txt, status: 404}
       - {path: /.well-known/openid-configuration, status: 404}
       - {path: /.well-known/oauth-authorization-server, status: 404}
+      - {path: /.well-known/oauth-protected-resource, status: 404}
       - {path: /.well-known/api-catalog, status: 404}
       - {path: /.well-known/ai-plugin.json, status: 404}
+      - {path: /.well-known/agent-card.json, status: 404}
+      - {path: /.well-known/agent.json, status: 404}
   - host: https://docs.useboom.ai
     documents:
+      - {path: /.well-known/agent-card.json, status: 200, file: ../a2a/boom-ai-agent-card.json, spec: A2A 1.0.0}
+      - {path: /.well-known/agent-skills/boom/skill.md, status: 200, file: ../skills/boom-ai-published-skill.md, spec: Agent Skills}
+      - {path: /.well-known/mcp.json, status: 200, file: boom-ai-docs-mcp.json}
+      - {path: /.well-known/agent.json, status: 404}
       - {path: /.well-known/security.txt, status: 404}
-      - {path: /.well-known/openid-configuration, status: 404}
-      - {path: /.well-known/oauth-authorization-server, status: 404}
       - {path: /.well-known/api-catalog, status: 404}
-      - {path: /.well-known/ai-plugin.json, status: 404}
+  - host: https://clerk.useboom.ai
+    note: >-
+      Boom's authorization server, named by the RFC 9728 protected-resource metadata
+      for the hosted MCP server. Clerk-operated on Boom's own subdomain.
+    documents:
+      - {path: /.well-known/oauth-authorization-server, status: 200, file: boom-ai-clerk-oauth-authorization-server.json, spec: RFC 8414}
+      - {path: /.well-known/openid-configuration, status: 200, file: boom-ai-clerk-openid-configuration.json, spec: OpenID Connect Discovery 1.0}
+  - host: https://useboom.ai
+    documents:
+      - {path: /.well-known/security.txt, status: 404}
+      - {path: /.well-known/agent-card.json, status: 404}
 notes: >-
-  No /.well-known/ discovery documents are published on either host as of the probe
-  date. The hosted MCP server at https://www.useboom.ai/mcp returns 401 (auth required)
-  but exposes no OAuth protected-resource metadata at a probed .well-known path.
+  Three real discovery surfaces are served. (1) The hosted MCP server at
+  https://www.useboom.ai/mcp answers 401 with a WWW-Authenticate challenge naming
+  resource_metadata https://www.useboom.ai/.well-known/oauth-protected-resource/mcp,
+  which resolves to a valid RFC 9728 document pointing at the Clerk-operated
+  authorization server https://clerk.useboom.ai. (2) docs.useboom.ai serves an A2A
+  agent card and the Agent Skill it references. (3) docs.useboom.ai/.well-known/mcp.json
+  is a Mintlify docs-search MCP descriptor, whose url resolves to a
+  *.mintlify.me preview host rather than a Boom-controlled endpoint — recorded as
+  observed, but it is the docs platform's server, not Boom's product MCP server.
+  No security.txt is published on any host.
+x-evidence:
+  checked: '2026-08-13'

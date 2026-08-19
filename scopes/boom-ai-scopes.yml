@@ -1,0 +1,76 @@
+generated: '2026-08-13'
+method: probed
+source: https://www.useboom.ai/.well-known/oauth-protected-resource/mcp
+docs: https://docs.useboom.ai/use-mcp
+applies_to: >-
+  The hosted MCP server ONLY (https://www.useboom.ai/mcp). The REST API has no OAuth
+  surface at all — it authenticates with a per-organization Bearer API key (boom_org_...)
+  and declares no scopes. See authentication/boom-ai-authentication.yml.
+protected_resource:
+  resource: https://www.useboom.ai/mcp
+  metadata_url: https://www.useboom.ai/.well-known/oauth-protected-resource/mcp
+  spec: RFC 9728 (OAuth 2.0 Protected Resource Metadata)
+  authorization_servers: [https://clerk.useboom.ai]
+  discovery: >-
+    Advertised in the WWW-Authenticate header of an unauthenticated POST to the MCP
+    endpoint: Bearer error="invalid_token", resource_metadata="…/oauth-protected-resource/mcp".
+schemes:
+  - name: MCP OAuth (Clerk)
+    type: oauth2
+    source: https://clerk.useboom.ai/.well-known/oauth-authorization-server
+    spec: RFC 8414
+    flows:
+      - flow: authorizationCode
+        authorizationUrl: https://clerk.useboom.ai/oauth/authorize
+        tokenUrl: https://clerk.useboom.ai/oauth/token
+        revocationUrl: https://clerk.useboom.ai/oauth/token/revoke
+        registrationUrl: https://clerk.useboom.ai/oauth/register
+        grant_types: [authorization_code, refresh_token]
+        dynamic_client_registration: true
+        token_endpoint_auth_methods: [client_secret_basic, client_secret_post, none]
+    jwks_uri: https://clerk.useboom.ai/.well-known/jwks.json
+    userinfo_endpoint: https://clerk.useboom.ai/oauth/userinfo
+    introspection_endpoint: https://clerk.useboom.ai/oauth/token_info
+scopes:
+  - scope: profile
+    description: Basic profile of the signed-in Boom user.
+    required_by_resource: true
+    sources: [protected-resource-metadata, authorization-server-metadata]
+  - scope: email
+    description: Email address of the signed-in Boom user.
+    required_by_resource: true
+    sources: [protected-resource-metadata, authorization-server-metadata]
+  - scope: user:org:read
+    description: >-
+      Read the user's organization membership — how the MCP server binds a session to one
+      Boom organization. All data access is then scoped to that organization.
+    required_by_resource: true
+    sources: [protected-resource-metadata, authorization-server-metadata]
+  - scope: openid
+    description: OpenID Connect sign-in.
+    required_by_resource: false
+    sources: [authorization-server-metadata]
+  - scope: offline_access
+    description: Refresh-token issuance for long-lived agent sessions.
+    required_by_resource: false
+    sources: [authorization-server-metadata]
+  - scope: public_metadata
+    description: Clerk public user metadata.
+    required_by_resource: false
+    sources: [authorization-server-metadata]
+  - scope: private_metadata
+    description: Clerk private user metadata.
+    required_by_resource: false
+    sources: [authorization-server-metadata]
+authorization_note: >-
+  The scopes are identity scopes, not capability scopes — none of them names a Boom
+  resource or an action. Authorization over Boom's data is NOT expressed in the OAuth
+  scope set: it is inherited from the signed-in user's organization membership and role,
+  with destructive actions (launching an initiative, adding participants — both of which
+  send real WhatsApp messages) gated on org-admin permission. An agent holding a token
+  cannot tell from the scope string what it is allowed to do.
+x-evidence:
+  - {url: 'https://www.useboom.ai/.well-known/oauth-protected-resource/mcp', status: 200, checked: '2026-08-13'}
+  - {url: 'https://clerk.useboom.ai/.well-known/oauth-authorization-server', status: 200, checked: '2026-08-13'}
+  - {url: 'https://clerk.useboom.ai/.well-known/openid-configuration', status: 200, checked: '2026-08-13'}
+  - {url: 'https://www.useboom.ai/mcp', status: 401, checked: '2026-08-13', note: 'POST tools/list — invalid_token with resource_metadata challenge'}

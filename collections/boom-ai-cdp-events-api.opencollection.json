@@ -1,0 +1,125 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Boom CDP Custom Objects CDP Events API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "CDP Events",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List events",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/cdp/events",
+            "params": [
+              {
+                "name": "name",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "personExternalId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "customObjectType",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "customObjectExternalId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "cursor",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List events, newest first, with optional filters by name, subject, and time range."
+        },
+        {
+          "info": {
+            "name": "Record event",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/cdp/events",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Record one behavioral event for a person and/or custom object. This is the real-time path — it triggers journey enrollment. Unknown subjects still ingest and are linked later."
+        },
+        {
+          "info": {
+            "name": "Get event",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/cdp/events/:externalId",
+            "params": [
+              {
+                "name": "externalId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Read one event by its external id."
+        },
+        {
+          "info": {
+            "name": "Batch record events",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/cdp/events/batch",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Ingest up to 1000 events in one request, for bulk or historical loads. Unlike the single endpoint, this does not trigger journey enrollment."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

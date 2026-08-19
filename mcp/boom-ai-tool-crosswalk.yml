@@ -1,0 +1,138 @@
+generated: '2026-08-13'
+method: derived
+source: >-
+  Derived by binding the MCP tool names Boom names verbatim in its own published Agent
+  Skills (github.com/BOOM-TML/skills and
+  https://docs.useboom.ai/.well-known/agent-skills/boom/skill.md) to the operationIds in
+  openapi/_original/boom-ai-openapi-original.json. Live tools/list is auth-gated.
+surfaces:
+  openapi:
+    file: openapi/_original/boom-ai-openapi-original.json
+    version: 3.1.0
+    operations: 86
+    gated: false
+  mcp:
+    url: https://www.useboom.ai/mcp
+    transport: http
+    gated: true
+    gate_evidence: >-
+      POST {"jsonrpc":"2.0","id":1,"method":"tools/list"} returns HTTP 401
+      {"error":"invalid_token"} with WWW-Authenticate naming
+      resource_metadata https://www.useboom.ai/.well-known/oauth-protected-resource/mcp.
+      Input schemas therefore require an authenticated introspection; the tool NAMES
+      below are the provider's own, published in its skills.
+  graphql:
+    present: false
+binding_basis: >-
+  Boom documents a deliberate one-to-one surface parity — "Every capability is defined
+  once and exposed identically over REST and MCP — same names, same inputs, same errors"
+  (https://docs.useboom.ai/one-surface). Every one of the 62 tool names harvested from
+  the published skills matches an OpenAPI operationId character-for-character, which
+  corroborates the claim rather than assuming it. Each tool therefore inherits its real
+  input contract from that operation's parameters + requestBody.
+coverage:
+  tools_named: 62
+  tools_bound: 62
+  tools_unbound: 0
+  mcp_only: 0
+  rest_operations_total: 86
+  rest_operations_with_named_tool: 62
+  rest_operations_without_named_tool: 24
+crosswalk:
+  - {tool: cdp_people_list, category: cdp, rest: [cdp_people_list], binding: rest, confidence: high}
+  - {tool: cdp_people_get, category: cdp, rest: [cdp_people_get], binding: rest, confidence: high}
+  - {tool: cdp_people_upsert, category: cdp, rest: [cdp_people_upsert], binding: rest, confidence: high}
+  - {tool: cdp_people_batch_upsert, category: cdp, rest: [cdp_people_batch_upsert], binding: rest, confidence: high}
+  - {tool: cdp_events_record, category: cdp, rest: [cdp_events_record], binding: rest, confidence: high}
+  - {tool: cdp_events_batch_record, category: cdp, rest: [cdp_events_batch_record], binding: rest, confidence: high}
+  - {tool: cdp_custom_object_types_list, category: cdp, rest: [cdp_custom_object_types_list], binding: rest, confidence: high}
+  - {tool: cdp_custom_object_types_get, category: cdp, rest: [cdp_custom_object_types_get], binding: rest, confidence: high}
+  - {tool: cdp_custom_object_types_create, category: cdp, rest: [cdp_custom_object_types_create], binding: rest, confidence: high}
+  - {tool: cdp_custom_objects_upsert, category: cdp, rest: [cdp_custom_objects_upsert], binding: rest, confidence: high}
+  - {tool: cdp_relationship_types_register, category: cdp, rest: [cdp_relationship_types_register], binding: rest, confidence: high}
+  - {tool: cdp_relationships_link, category: cdp, rest: [cdp_relationships_link], binding: rest, confidence: high}
+  - {tool: cdp_relationships_batch, category: cdp, rest: [cdp_relationships_batch], binding: rest, confidence: high}
+  - {tool: segments_list, category: segments, rest: [segments_list], binding: rest, confidence: high}
+  - {tool: segments_get, category: segments, rest: [segments_get], binding: rest, confidence: high}
+  - {tool: segments_create, category: segments, rest: [segments_create], binding: rest, confidence: high}
+  - {tool: segments_update, category: segments, rest: [segments_update], binding: rest, confidence: high}
+  - {tool: segments_delete, category: segments, rest: [segments_delete], binding: rest, confidence: high}
+  - {tool: segments_catalog, category: segments, rest: [segments_catalog], binding: rest, confidence: high}
+  - {tool: segments_validate, category: segments, rest: [segments_validate], binding: rest, confidence: high}
+  - {tool: segments_preview, category: segments, rest: [segments_preview], binding: rest, confidence: high}
+  - {tool: segments_evaluate, category: segments, rest: [segments_evaluate], binding: rest, confidence: high}
+  - {tool: segments_members_list, category: segments, rest: [segments_members_list], binding: rest, confidence: high}
+  - {tool: initiatives_list, category: initiatives, rest: [initiatives_list], binding: rest, confidence: high}
+  - {tool: initiatives_get, category: initiatives, rest: [initiatives_get], binding: rest, confidence: high}
+  - {tool: initiatives_create, category: initiatives, rest: [initiatives_create], binding: rest, confidence: high}
+  - {tool: initiatives_update, category: initiatives, rest: [initiatives_update], binding: rest, confidence: high}
+  - {tool: initiatives_launch, category: initiatives, rest: [initiatives_launch], binding: rest, confidence: high,
+     note: 'Consequential — launching sends real outbound WhatsApp messages; org-admin only.'}
+  - {tool: initiatives_summary, category: initiatives, rest: [initiatives_summary], binding: rest, confidence: high}
+  - {tool: initiatives_templates_get, category: initiatives, rest: [initiatives_templates_get], binding: rest, confidence: high}
+  - {tool: initiatives_templates_set, category: initiatives, rest: [initiatives_templates_set], binding: rest, confidence: high}
+  - {tool: initiatives_participants_list, category: participants, rest: [initiatives_participants_list], binding: rest, confidence: high}
+  - {tool: initiatives_participants_add, category: participants, rest: [initiatives_participants_add], binding: rest, confidence: high,
+     note: 'Consequential — each person added receives a real outbound WhatsApp message.'}
+  - {tool: initiatives_participant_get, category: participants, rest: [initiatives_participant_get], binding: rest, confidence: high}
+  - {tool: initiatives_participant_messages_list, category: participants, rest: [initiatives_participant_messages_list], binding: rest, confidence: high}
+  - {tool: initiatives_participants_stop, category: participants, rest: [initiatives_participants_stop], binding: rest, confidence: high}
+  - {tool: extraction_schema_get, category: extraction, rest: [extraction_schema_get], binding: rest, confidence: high}
+  - {tool: extraction_schema_set, category: extraction, rest: [extraction_schema_set], binding: rest, confidence: high}
+  - {tool: journeys_list, category: journeys, rest: [journeys_list], binding: rest, confidence: high}
+  - {tool: journeys_get, category: journeys, rest: [journeys_get], binding: rest, confidence: high}
+  - {tool: journeys_get_definition, category: journeys, rest: [journeys_get_definition], binding: rest, confidence: high}
+  - {tool: journeys_create_draft, category: journeys, rest: [journeys_create_draft], binding: rest, confidence: high}
+  - {tool: journeys_create_draft_from_published, category: journeys, rest: [journeys_create_draft_from_published], binding: rest, confidence: high}
+  - {tool: journeys_update_draft, category: journeys, rest: [journeys_update_draft], binding: rest, confidence: high}
+  - {tool: journeys_add_node, category: journeys, rest: [journeys_add_node], binding: rest, confidence: high}
+  - {tool: journeys_update_node, category: journeys, rest: [journeys_update_node], binding: rest, confidence: high}
+  - {tool: journeys_delete_node, category: journeys, rest: [journeys_delete_node], binding: rest, confidence: high}
+  - {tool: journeys_connect_nodes, category: journeys, rest: [journeys_connect_nodes], binding: rest, confidence: high}
+  - {tool: journeys_disconnect_nodes, category: journeys, rest: [journeys_disconnect_nodes], binding: rest, confidence: high}
+  - {tool: journeys_set_trigger, category: journeys, rest: [journeys_set_trigger], binding: rest, confidence: high}
+  - {tool: journeys_validate, category: journeys, rest: [journeys_validate], binding: rest, confidence: high}
+  - {tool: journeys_publish, category: journeys, rest: [journeys_publish], binding: rest, confidence: high,
+     note: 'Consequential — publishing starts real enrollment and outreach; requires confirm: true.'}
+  - {tool: journeys_authoring_catalog, category: journeys-catalog, rest: [journeys_authoring_catalog], binding: rest, confidence: high}
+  - {tool: journeys_condition_catalog, category: journeys-catalog, rest: [journeys_condition_catalog], binding: rest, confidence: high}
+  - {tool: journeys_event_catalog, category: journeys-catalog, rest: [journeys_event_catalog], binding: rest, confidence: high}
+  - {tool: journeys_message_channels, category: journeys-catalog, rest: [journeys_message_channels], binding: rest, confidence: high}
+  - {tool: journeys_message_templates, category: journeys-catalog, rest: [journeys_message_templates], binding: rest, confidence: high}
+  - {tool: journeys_message_variables, category: journeys-catalog, rest: [journeys_message_variables], binding: rest, confidence: high}
+  - {tool: templates_list, category: whatsapp-templates, rest: [templates_list], binding: rest, confidence: high}
+  - {tool: templates_get, category: whatsapp-templates, rest: [templates_get], binding: rest, confidence: high}
+  - {tool: templates_create, category: whatsapp-templates, rest: [templates_create], binding: rest, confidence: high}
+  - {tool: whatsapp_numbers_list, category: whatsapp-templates, rest: [whatsapp_numbers_list], binding: rest, confidence: high}
+mcp_only: []
+rest_only:
+  - capability: CDP reads and deletes
+    operations: [cdp_people_search, cdp_people_delete, cdp_events_list, cdp_events_get,
+                 cdp_custom_objects_list, cdp_custom_objects_get, cdp_custom_objects_delete,
+                 cdp_custom_objects_batch_upsert, cdp_relationship_types_list, cdp_relationship_types_get,
+                 cdp_relationships_list, cdp_relationships_unlink, cdp_sources_list]
+  - capability: Initiative lifecycle beyond launch
+    operations: [initiatives_pause, initiatives_resume, initiatives_cancel, initiatives_archive,
+                 initiatives_unarchive, initiatives_transcripts_list, initiatives_participant_steps_list]
+  - capability: Journey run control
+    operations: [journeys_stop]
+  - capability: Extraction re-run
+    operations: [extraction_reextract]
+  - capability: Org configuration
+    operations: [environments_list, http_credentials_list]
+rest_only_note: >-
+  These 24 operations are NOT asserted to be missing from MCP. Boom states the two
+  surfaces are identical, and the live tools/list is auth-gated, so this section records
+  only that the provider's own published skills never name a tool for them. Six of them
+  (initiatives_pause, initiatives_resume, initiatives_transcripts_list, journeys_stop,
+  extraction_reextract, environments_list) are operations that appeared in the live
+  OpenAPI after the skills were last published (2026-07-28), which is the most likely
+  explanation. Confirming MCP coverage requires an authenticated tools/list.
+known_gaps:
+  - >-
+    Boom documents one real REST/MCP divergence itself: the journey email-send step is
+    not in the authoring catalog, so an agent cannot add one over MCP — it must be built
+    in the Boom app (https://docs.useboom.ai/use-mcp).
+  - >-
+    Data-source sync (PostgreSQL/MySQL/Shopify/Skio) is UI-only and on neither surface
+    (https://docs.useboom.ai/connect-your-database).

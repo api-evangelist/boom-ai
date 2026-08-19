@@ -1,0 +1,39 @@
+generated: '2026-08-13'
+method: searched
+probe: true
+url: https://trust.useboom.ai/
+platform: Vanta
+title: BOOM AI Trust Center
+certifications:
+  - name: SOC 2 Type 1
+    standard: AICPA SOC 2 Trust Services Criteria
+    status: report completed
+    source: https://useboom.ai/ (Security & trust section)
+  - name: SOC 2 Type 2
+    standard: AICPA SOC 2 Trust Services Criteria
+    status: examination in progress
+    source: https://useboom.ai/ (Security & trust section)
+claims:
+  - "Boom's controls are independently examined against the AICPA's SOC 2 Trust Services Criteria."
+legal_documents:
+  - {name: Terms of Service, url: 'https://drive.google.com/file/d/1SlTp1_QWhVASpbxncSj1NpmFqiiGBcF1/view'}
+  - {name: Privacy Policy, url: 'https://drive.google.com/file/d/1ITWbsA8ZmyhinJYYr4ezRdhNe-MWQBC_/view'}
+  - {name: Customer Agreement, listed_on: 'https://useboom.ai/ footer'}
+  - {name: Data Processing Addendum, listed_on: 'https://useboom.ai/ footer'}
+  - {name: Sub-processors, listed_on: 'https://useboom.ai/ footer'}
+  - {name: Messaging Terms, listed_on: 'https://useboom.ai/ footer'}
+  - {name: Cookie Policy, listed_on: 'https://useboom.ai/ footer'}
+evidence:
+  - {source: 'https://trust.useboom.ai/', status: 200, kind: trust-center,
+     detail: 'Vanta-hosted trust report; canonical link rel points at trust.useboom.ai; og:title "BOOM AI Trust Center"'}
+  - {source: 'https://useboom.ai/', status: 200, kind: security-section,
+     keywords: [SOC 2 Type 1, SOC 2 Type 2, enterprise-grade security, trust center]}
+limitations: >-
+  The trust center itself is a client-rendered Vanta single-page app: the HTML shell
+  carries only the title and metadata, and Vanta's data API answers 401 anonymously, so
+  the certification list, document library and sub-processor roster could not be read
+  machine-side. The two SOC 2 facts above come from Boom's own homepage, which states them
+  in text. A human clicking through the trust center may see more; a machine cannot.
+  Enterprise-tier SSO, audit and governance controls are named on the pricing page.
+x-evidence:
+  checked: '2026-08-13'

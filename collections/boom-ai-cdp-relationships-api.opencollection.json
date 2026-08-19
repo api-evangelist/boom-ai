@@ -1,0 +1,204 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Boom CDP Custom Objects CDP Relationships API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "CDP Relationships",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List relationship types",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/cdp/relationship-types"
+          },
+          "docs": "List the organization's relationship types — use it to discover valid link shapes before linking."
+        },
+        {
+          "info": {
+            "name": "Register relationship type",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/cdp/relationship-types",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Register a relationship type and its metadata. Re-registering an existing type updates it in place."
+        },
+        {
+          "info": {
+            "name": "Get relationship type",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/cdp/relationship-types/:relationshipTypeId",
+            "params": [
+              {
+                "name": "relationshipTypeId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Read one relationship type by id."
+        },
+        {
+          "info": {
+            "name": "List relationships",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/cdp/relationships",
+            "params": [
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "personExternalId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "customObjectType",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "customObjectExternalId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "direction",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "include_removed",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "relationshipTypeId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "role",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "cursor",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List relationship edges of one kind, anchored on a person or custom object, newest first."
+        },
+        {
+          "info": {
+            "name": "Link relationship",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/cdp/relationships",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Link a person to a custom object, or one custom object to another. Idempotent."
+        },
+        {
+          "info": {
+            "name": "Unlink relationship",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.useboom.ai/api/v1/cdp/relationships",
+            "params": [
+              {
+                "name": "kind",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "relationshipTypeId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "personExternalId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "customObjectExternalId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "parentExternalId",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "childExternalId",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Unlink (soft-delete) a relationship. Idempotent."
+        },
+        {
+          "info": {
+            "name": "Batch link / unlink",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/cdp/relationships/batch",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Link or unlink up to 1000 relationships in one request."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,45 @@
+generated: '2026-08-13'
+method: searched
+source: >-
+  npm registry metadata (registry.npmjs.org), the Boom docs SDK/skills pages, and the
+  BOOM-TML GitHub organization.
+summary:
+  client_sdk_count: 0
+  package_count: 1
+  note: >-
+    Boom publishes NO first-party API client library in any language. The one package it
+    ships is an installer for its Claude Code Agent Skills — real, first-party, and
+    current, but it is not an API SDK and is not counted as one. Boom's own integration
+    story is "call the REST API directly, or connect the hosted MCP server" — the docs
+    quickstart shows raw curl, and https://docs.useboom.ai/use-mcp positions MCP as the
+    no-key path for agents.
+packages:
+  - language: javascript
+    registry: npm
+    name: "@useboom/skills-setup"
+    url: https://www.npmjs.com/package/@useboom/skills-setup
+    install: npx @useboom/skills-setup
+    official: true
+    kind: skills-installer
+    version: 0.1.1
+    published: '2026-07-25'
+    repository: https://github.com/BOOM-TML/skills/tree/main/packages/skills-setup
+    license: MIT
+    maintainer: juan@useboom.ai
+    description: >-
+      One command to set up Boom's Claude Code skills, with auto-update. Installs Boom's
+      plugin marketplace (BOOM-TML/skills), the boom plugin, and the hosted MCP server
+      at https://www.useboom.ai/mcp. Not an API client library.
+registries_checked:
+  - {registry: npm, query: '@useboom scope + "boom useboom" text search', result: 'one package: @useboom/skills-setup'}
+  - {registry: npm, query: '@useboom/sdk', result: 404}
+  - {registry: npm, query: useboom, result: 404}
+  - {registry: pypi, query: useboom, result: 404}
+  - {registry: pypi, query: boom-ai, result: 404}
+  - {registry: github, query: 'org BOOM-TML public repos', result: 'one public repo: BOOM-TML/skills (JavaScript, MIT, pushed 2026-07-28)'}
+currency_note: >-
+  @useboom/skills-setup 0.1.1 was first and last published 2026-07-25, and the skills
+  repo it installs was last pushed 2026-07-28 — both current relative to the API, whose
+  live OpenAPI gained six operations after that date (initiatives_pause,
+  initiatives_resume, initiatives_transcripts_list, journeys_stop, extraction_reextract,
+  environments_list). The skills therefore trail the API by one small increment.

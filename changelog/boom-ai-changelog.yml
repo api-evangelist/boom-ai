@@ -1,23 +1,80 @@
-generated: '2026-07-18'
+generated: '2026-08-13'
 method: searched
 source: https://useboom.ai/changelog
 scheme: date-based
 current_version: v1
+cadence: near-daily; every entry dated, no semantic version numbers
 notes: >-
-  Boom publishes a dated product changelog (no semantic version numbers). The API
-  itself is served under /api/v1. Recent window captured below.
+  Boom publishes a dated product changelog covering the whole platform (app + API). The
+  API itself is served under /api/v1 and has not versioned since. The recent window is
+  captured below; the live page is the source of truth. Note the changelog is product-led
+  — it is not an API changelog, and API-affecting changes (the 1,000 req/min rate-limit
+  raise, new endpoints) appear inside "Minor improvements" rather than being called out.
+  Six operations (initiatives_pause, initiatives_resume, initiatives_transcripts_list,
+  journeys_stop, extraction_reextract, environments_list) appeared in the live OpenAPI
+  since the 2026-07-18 harvest without a dedicated changelog entry.
 entries:
+  - date: '2026-08-11'
+    breaking: false
+    highlights:
+      - 'Minor improvements — conversations: back-to-back customer messages no longer leave the second unanswered.'
+  - date: '2026-08-10'
+    breaking: false
+    highlights:
+      - Duplicate an initiative from the list row menu — the copy lands in Draft with full setup and zero participants.
+      - Every picker in the journey builder (templates, numbers, segments, variables) is now searchable.
+      - WhatsApp template preview renders real formatting (bold, italics, strikethrough, monospace, lists) and buttons.
+      - 'Minor improvements — journeys: fixed a message-sending step skipping a WhatsApp resend on retry.'
+  - date: '2026-08-07'
+    breaking: false
+    highlights:
+      - Per-message and per-path attribution in journey analytics, with a Routes attribution view and a Paths-and-outcomes section.
+      - 'Minor improvements — segments list paginated; Data and Variables available in every workspace; initiative context limit raised to 20,000 characters.'
+  - date: '2026-08-06'
+    breaking: false
+    highlights:
+      - 'Minor improvements — data view export now includes the participant phone number.'
+  - date: '2026-08-05'
+    breaking: false
+    highlights:
+      - Agent-to-human escalations now post an internal handoff note in the inbox thread.
+      - Messages can print data from related records (orders, fulfillments) across the full contact-to-order-to-fulfillment path.
+      - Segments can filter on the ABSENCE of a relationship, and a negated condition can carry its own filters.
+      - Minor improvements — unsaved-changes prompt and decision-node condition rendering.
+  - date: '2026-08-04'
+    breaking: false
+    highlights:
+      - Shopify fulfillments and order transactions ingested as first-class data — segment and trigger journeys on shipping, failed payments, and refunds.
+  - date: '2026-08-03'
+    breaking: false
+    highlights:
+      - New Random Split node for A/B testing inside one journey; each contact is assigned once and stays on its branch across retries.
+      - Journey builder now confirms before discarding unsaved edits.
+      - Minor improvements — reply counting no longer records a held-back agent reply as a dropped message; tracked links resolve correctly in the inbox.
+  - date: '2026-07-31'
+    breaking: false
+    highlights:
+      - Undo/redo on the journey canvas (Ctrl+Z / Ctrl+Y).
+      - Minor improvements — managed and expiring test phone numbers, honest initiative-tester coverage reporting, canvas Tidy action, invalid nodes flagged inline, clearer unreadable-file handling.
+  - date: '2026-07-30'
+    breaking: false
+    highlights:
+      - New Message Logs page listing every message with its delivery state.
   - date: '2026-07-16'
+    breaking: false
     highlights:
       - Minor improvements — nested response field selection in journey nodes and contact renaming updates.
   - date: '2026-07-15'
+    breaking: false
     highlights:
       - Send customer documents to your own systems from a journey (WhatsApp document forwarding via HTTP nodes).
       - Use extracted conversation data in your journeys (agent-extracted fields as journey variables).
       - Add extra phone numbers and emails to a contact (expanded contact matching).
-      - Minor improvements — organization switcher, source previews, HTTP node enhancements.
   - date: '2026-07-14'
+    breaking: false
     highlights:
-      - The Concierge reads your PDF attachments (text extraction from WhatsApp documents).
-      - A self-serve Sources page for your data (consolidated data integrations management).
+      - The Concierge reads PDF attachments (text extraction from WhatsApp documents).
+      - A self-serve Sources page for data integrations.
       - 'Minor improvements — API rate limits raised to 1,000 requests/minute; segment accuracy improved.'
+x-evidence:
+  - {url: 'https://useboom.ai/changelog', status: 200, checked: '2026-08-13'}

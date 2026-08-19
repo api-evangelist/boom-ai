@@ -1,7 +1,7 @@
-generated: '2026-07-18'
+generated: '2026-08-13'
 method: searched
 source: https://docs.useboom.ai
-derived_from: openapi/boom-ai-openapi-original.json
+derived_from: openapi/_original/boom-ai-openapi-original.json
 authentication:
   style: bearer-token
   header: 'Authorization: Bearer boom_org_...'
@@ -19,6 +19,11 @@ idempotency:
     operations are also idempotent.
   key_field: externalId
   retriable: true
+  webhook_side: >-
+    Boom's OUTBOUND webhook deliveries do carry a real `Idempotency-Key` header (the event
+    `id`), and delivery is explicitly at-least-once — consumers are told to dedupe on it.
+    So an Idempotency-Key contract exists in Boom's system; it runs provider-to-consumer
+    rather than consumer-to-provider.
 pagination:
   style: cursor
   request_params:
@@ -29,12 +34,19 @@ pagination:
     - next_cursor
   ordering: newest-first
 rate_limiting:
-  limit: 1000 requests/minute per API key
+  limit: 1000 requests/minute per API key (sliding window)
+  batch_limit: 20 requests/minute per API key on /batch endpoints
   headers:
-    - X-RateLimit-*
+    - X-RateLimit-Limit
+    - X-RateLimit-Remaining
+    - X-RateLimit-Reset
     - Retry-After
+  headers_on: every response, not only on rejection
   exceeded_status: 429
+  exceeded_body: '{ "error": "Rate limit exceeded" }'
+  safe_to_resend: true   # rejected before any work happens
   docs_note: raised to 1,000 requests/minute (changelog 2026-07-14)
+  see: rate-limits/boom-ai-rate-limits.yml
 batch:
   endpoints: /batch on people, custom-objects, events, relationships
   max_records: 1000
@@ -50,8 +62,18 @@ versioning:
   scheme: uri-path
   current: v1
   base_path: /api/v1
+events:
+  outbound_webhooks: true
+  event_types: [journey_run.started, journey_run.ended, enrollment.rejected, ping]
+  envelope: '{ id, type, occurredAt, organizationId, data }'
+  delivery: at-least-once (dedupe on id); emission is at-most-once and unrecoverable if it fails
+  configuration: UI only — no API to create a subscription
+  see: asyncapi/boom-ai-webhooks.yml
 cross_links:
   authentication: authentication/boom-ai-authentication.yml
   errors: errors/boom-ai-error-codes.yml
   lifecycle: lifecycle/boom-ai-lifecycle.yml
   sandbox: sandbox/boom-ai-sandbox.yml
+  rate_limits: rate-limits/boom-ai-rate-limits.yml
+  webhooks: asyncapi/boom-ai-webhooks.yml
+  scopes: scopes/boom-ai-scopes.yml

@@ -1,0 +1,95 @@
+generated: '2026-08-13'
+method: searched
+source: https://docs.useboom.ai/webhooks
+spec_type: none
+asyncapi_published: false
+asyncapi_note: >-
+  Boom publishes NO AsyncAPI document — probed the docs host and the BOOM-TML GitHub org.
+  The webhook surface below is captured from the provider's own prose reference and is
+  recorded as a Webhooks catalog, not as a machine-readable event contract. Nothing here
+  is invented; payload field lists are the ones Boom prints.
+surface:
+  direction: outbound
+  protocol: HTTPS POST
+  content_type: application/json
+  enablement: per-workspace, off by default (Settings -> Webhooks; requires Settings -> HTTP Credentials)
+  configuration: UI only — subscriptions are created in the Boom app, not over the API
+  related_api: GET /api/v1/http-credentials (http_credentials_list) lists the credentials a subscription can use
+  timeout_seconds: 10
+envelope:
+  fields:
+    - {name: id, description: 'Event id (e.g. evt_cm7x…); also sent as the Idempotency-Key request header'}
+    - {name: type, description: The event type, or "ping" for the synthetic test delivery}
+    - {name: occurredAt, description: ISO 8601 timestamp}
+    - {name: organizationId, description: The Boom organization the event belongs to}
+    - {name: data, description: Event-specific payload}
+  idempotency_header: Idempotency-Key
+events:
+  - name: journey_run.started
+    fires_when: Someone was enrolled and their run began — at enrollment, BEFORE the first message is sent. Not a delivery receipt.
+    payload_keys: [run, trigger, startedAt]
+    run_fields: [engagementId, initiativeId, initiativeName, workflowId, customerId, personId, personExternalId]
+    trigger_kinds:
+      - {kind: cdp_event, extra: [eventName, eventId]}
+      - {kind: segment, extra: [segmentId]}
+      - {kind: manual, extra: []}
+    gotcha: >-
+      personId is frequently null — populated only on the CDP-event enrollment path.
+      Join on personExternalId (your own id) instead.
+  - name: journey_run.ended
+    fires_when: The run reached a terminal state, however it ended. May be days after started; durationMs gives the real gap.
+    payload_keys: [run, outcome]
+    outcome_fields: [status, reason, lastSignal, terminalNode, error, startedAt, endedAt, durationMs, messagesSent, messagesReceived]
+    reasons: [completed, no_reply, abandoned, failed_node_error, failed_engine, canceled_operator,
+              canceled_initiative, canceled_participant_stop, expired]
+    signals: [REPLIED, CLOSED, TIMEOUT, STALE, null]
+    gotcha: >-
+      Branch on reason, not status — three materially different endings all land on
+      status CONVERSATION_COMPLETE. `expired` is reserved and cannot currently occur.
+      outcome.error is an object ({errorName}) or null, never a message or stack.
+  - name: enrollment.rejected
+    fires_when: A CDP event matched a journey trigger but no run started. CDP-event path only — segment, manual, CSV and API enrollment never emit it.
+    payload_keys: [reason, detail, initiativeId, workflowId, eventName, eventId, personId, personExternalId, customerId]
+    reasons:
+      - {reason: no_channel, means: No reachable phone or email for this person}
+      - {reason: active_run, means: Already in a live run of this journey, detail: existingEngagementId}
+      - {reason: frequency_cap, means: Hit the initiative's enrollment cap, detail: 'count, window'}
+      - {reason: no_workflow, means: The journey stopped being published mid-flight}
+      - {reason: internal_error, means: Enrollment failed after retries, detail: errorName}
+    gotcha: '"No trigger matched" does not emit. Treat initiativeId and workflowId as nullable.'
+  - name: ping
+    fires_when: Someone clicks the test-delivery button. Nothing subscribes to it.
+    payload_keys: [id, type, occurredAt, organizationId, data]
+    gotcha: Handle as a no-op (return 2xx and ignore) so a colleague's test never reads as a real run.
+security:
+  authentication: >-
+    A credential is REQUIRED and must actually authenticate — BEARER, API_KEY (header or
+    query parameter) or BASIC. A "No authentication" credential cannot be attached: it is
+    greyed out in the picker, rejected on save, and refused at delivery rather than sent
+    unsigned.
+  signature: none — authenticity is proven by the credential Boom sends, not by a payload signature
+  url_requirements: >-
+    Must start with a literal https:// (plain http rejected on save). Private and loopback
+    addresses save but are blocked at delivery.
+  per_environment: >-
+    A subscription URL may reference {{env.KEY}}, and credential keys may have a global row
+    plus per-environment overrides. A key with no row for an environment and no global row
+    causes deliveries to be DROPPED, not sent unauthenticated.
+delivery:
+  guarantee: at-least-once delivery, at-most-once emission
+  dedupe_on: id
+  retries:
+    - {response: 2xx, behavior: delivered}
+    - {response: '5xx, 408, 429', behavior: retried up to 3 times — 4 attempts total}
+    - {response: no response (timeout, DNS, connection reset), behavior: retried up to 3 times}
+    - {response: any other 4xx, behavior: permanent — not retried (includes 401 and 403)}
+  reconciliation_warning: >-
+    Boom states plainly that webhooks are NOT a source of truth: if emission fails the run
+    is permanently unreported and no retry recovers it, and a subscription with an
+    unresolvable credential or {{env.*}} token drops the event outright. Consumers must
+    reconcile periodically rather than treat the stream as a ledger.
+  head_of_line_warning: >-
+    Deliveries for one event are attempted in sequence; a retryable failure on one
+    subscription interrupts the pass and can starve the subscriptions after it.
+x-evidence:
+  - {url: 'https://docs.useboom.ai/webhooks.md', status: 200, checked: '2026-08-13'}

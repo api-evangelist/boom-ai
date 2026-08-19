@@ -1,0 +1,424 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Boom CDP Custom Objects Initiatives API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Initiatives",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List initiatives",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/initiatives",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "cursor",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "status",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List the organization's initiatives, newest first. Archived initiatives are excluded."
+        },
+        {
+          "info": {
+            "name": "Create initiative",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/initiatives",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a draft initiative — only a name is required. For a WhatsApp initiative, link an approved template before launching."
+        },
+        {
+          "info": {
+            "name": "Get initiative",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get one initiative by id."
+        },
+        {
+          "info": {
+            "name": "Update initiative",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Edit a draft initiative. Only draft initiatives are editable."
+        },
+        {
+          "info": {
+            "name": "Archive initiative",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/archive",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Archive a completed or canceled initiative, hiding it from the default list. Reversible with unarchive."
+        },
+        {
+          "info": {
+            "name": "Cancel initiative",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/cancel",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Cancel an initiative and stop its conversations. Terminal. Requires an org admin."
+        },
+        {
+          "info": {
+            "name": "Data summary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/data/summary",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "The initiative's data summary — participant count and, per captured variable, its coverage and rollup."
+        },
+        {
+          "info": {
+            "name": "Get extraction schema",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/extraction-schema",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Read an initiative's current extraction schema — the typed fields pulled from each conversation. Returns the schema in the exact shape extraction_schema_set accepts, so you can read it, edit it, and set it back. `hasSchema` is false when none is configured yet."
+        },
+        {
+          "info": {
+            "name": "Set extraction schema",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/extraction-schema",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Author or replace an initiative's extraction schema — the typed fields (bool/int/enum/string) pulled from each conversation. Replaces the schema wholesale; submit the complete set of fields, not a diff. A version is created only when the schema actually changes."
+        },
+        {
+          "info": {
+            "name": "Launch initiative",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/launch",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Launch a draft initiative — it goes active and Boom starts reaching out. A WhatsApp initiative needs an approved template first. Requires an org admin."
+        },
+        {
+          "info": {
+            "name": "List participants",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/participants",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "cursor",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List an initiative's participants and the values Boom captured from each, newest first."
+        },
+        {
+          "info": {
+            "name": "Add participants",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/participants",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Add people to an active WhatsApp initiative. WARNING: each person added receives a real outbound WhatsApp message. Do-Not-Contact people are skipped."
+        },
+        {
+          "info": {
+            "name": "Get participant",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/participants/:participantId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "participantId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get one participant's status and captured answers."
+        },
+        {
+          "info": {
+            "name": "Participant messages",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/participants/:participantId/messages",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "participantId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "The participant's full conversation transcript for this initiative, in order."
+        },
+        {
+          "info": {
+            "name": "Participant run steps",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/participants/:participantId/steps",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "participantId",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "The participant's node-by-node journey run timeline (most recent first): which nodes ran, the routing signal each emitted, and bounded handler output/error. Engine execution history — for what the customer said, use the messages endpoint."
+        },
+        {
+          "info": {
+            "name": "Stop participant",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/participants/:participantId/stop",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "participantId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Stop all messaging to one participant and close their conversation. Idempotent and safe — it never sends. Their answers and transcript stay readable."
+        },
+        {
+          "info": {
+            "name": "Get templates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/templates",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "List which WhatsApp template each outreach round sends. Round 1 must be linked before a WhatsApp initiative can launch."
+        },
+        {
+          "info": {
+            "name": "Set template",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/templates",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Link an approved WhatsApp template as a round's outreach message. Required before a WhatsApp initiative can launch."
+        },
+        {
+          "info": {
+            "name": "Unarchive initiative",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/initiatives/:id/unarchive",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Unarchive an initiative, restoring it to the default list. Its status is unchanged."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

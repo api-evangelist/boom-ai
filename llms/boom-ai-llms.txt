@@ -4,94 +4,107 @@
 
 ## Docs
 
-- [Batch upsert objects](https://docs.useboom.ai/api-reference/cdp-custom-objects/batch-upsert-objects.md): Upsert up to 1000 custom objects in one request. Idempotent and safely retryable.
-- [Create object type](https://docs.useboom.ai/api-reference/cdp-custom-objects/create-object-type.md): Create a custom object type — required before you can upsert objects of that kind.
-- [Delete object](https://docs.useboom.ai/api-reference/cdp-custom-objects/delete-object.md): Soft-delete a custom object and its links. Idempotent.
-- [Get object](https://docs.useboom.ai/api-reference/cdp-custom-objects/get-object.md): Read one custom object by type and external id.
-- [Get object type](https://docs.useboom.ai/api-reference/cdp-custom-objects/get-object-type.md): Read one custom object type by name.
-- [List object types](https://docs.useboom.ai/api-reference/cdp-custom-objects/list-object-types.md): List the organization's custom object types.
-- [List objects](https://docs.useboom.ai/api-reference/cdp-custom-objects/list-objects.md): List custom objects of one type, newest first.
-- [Upsert object](https://docs.useboom.ai/api-reference/cdp-custom-objects/upsert-object.md): Create or update a custom object by type and external id. The type must already exist; free-form attributes are fully replaced.
-- [Batch record events](https://docs.useboom.ai/api-reference/cdp-events/batch-record-events.md): Ingest up to 1000 events in one request, for bulk or historical loads. Unlike the single endpoint, this does not trigger journey enrollment.
-- [Get event](https://docs.useboom.ai/api-reference/cdp-events/get-event.md): Read one event by its external id.
-- [List events](https://docs.useboom.ai/api-reference/cdp-events/list-events.md): List events, newest first, with optional filters by name, subject, and time range.
-- [Record event](https://docs.useboom.ai/api-reference/cdp-events/record-event.md): Record one behavioral event for a person and/or custom object. This is the real-time path — it triggers journey enrollment. Unknown subjects still ingest and are linked later.
-- [Batch upsert people](https://docs.useboom.ai/api-reference/cdp-people/batch-upsert-people.md): Upsert up to 1000 people in one request. Idempotent and safely retryable.
-- [Delete person](https://docs.useboom.ai/api-reference/cdp-people/delete-person.md): Soft-delete a person and their outgoing links. Idempotent; behavioral events are kept.
-- [Get person](https://docs.useboom.ai/api-reference/cdp-people/get-person.md): Read one person by their external id.
+- [Documentation](https://docs.useboom.ai/introduction.md): Bring your customer data into Boom and turn it into AI conversations with your customers. One platform, two matching surfaces: REST and MCP.
+- [Start here](https://docs.useboom.ai/start-here.md): What Boom is, and which part of this site is yours depending on what you do.
+- [The Agent](https://docs.useboom.ai/the-agent.md): One agent per organization, briefed by a knowledge base, that improves from the corrections your team gives it.
+- [Initiatives](https://docs.useboom.ai/initiatives.md): One outreach mission: who you reach, what the agent is trying to accomplish, and what it comes back with.
+- [Journeys](https://docs.useboom.ai/journeys.md): The versioned workflow behind an initiative. Build it, validate it, and publish it, all over the API.
+- [Inbound conversations](https://docs.useboom.ai/inbound.md): When a customer writes first, the same agent answers, with the same context it uses for outreach.
+- [Segments](https://docs.useboom.ai/segments.md): Define an audience with a filter, keep it fresh, and use it to trigger outreach.
+- [Extraction](https://docs.useboom.ai/extraction.md): Define the typed fields a conversation should yield, then read the structured data back.
+- [Analytics and attribution](https://docs.useboom.ai/analytics.md): Define what success means for an initiative, then measure against it.
+- [Use MCP](https://docs.useboom.ai/use-mcp.md): Connect Boom to Claude, Cursor, or any AI tool. Add one link, sign in: no API key.
+- [Skills](https://docs.useboom.ai/skills.md): Install Boom's Agent Skills so Claude can run your customer conversations end-to-end over Boom.
+- [Connect your database](https://docs.useboom.ai/connect-your-database.md): Sync customers into the Boom CDP straight from your own PostgreSQL or MySQL database.
+- [Webhooks](https://docs.useboom.ai/webhooks.md): Get a POST to your endpoint when a journey run starts, ends, or an enrollment is rejected.
+- [One uniform surface](https://docs.useboom.ai/one-surface.md): Every capability is defined once and exposed identically over REST and MCP: same names, same inputs, same errors.
+- [Events](https://docs.useboom.ai/events.md): Record behavioral events, then read and list them back.
+- [Relationship types](https://docs.useboom.ai/relationship-types.md): Register the catalog of link shapes and the data you need to do it correctly.
+- [Template variables](https://docs.useboom.ai/template-variables.md): How to bind a WhatsApp template's placeholders to live data in a journey.
+- [Customer Data Platform](https://docs.useboom.ai/cdp/overview.md): The REST API for getting customer data into Boom: people, custom objects, events, and the relationships between them.
 - [List people](https://docs.useboom.ai/api-reference/cdp-people/list-people.md): List the organization's people, newest first.
 - [Search people](https://docs.useboom.ai/api-reference/cdp-people/search-people.md): Search the organization's people by name, or a partial email / phone / externalId. Returns a relevance-ranked shortlist.
+- [Get person](https://docs.useboom.ai/api-reference/cdp-people/get-person.md): Read one person by their external id.
 - [Upsert person](https://docs.useboom.ai/api-reference/cdp-people/upsert-person.md): Create or update a person by external id. Free-form attributes are fully replaced on each write.
-- [Batch link / unlink](https://docs.useboom.ai/api-reference/cdp-relationships/batch-link-unlink.md): Link or unlink up to 1000 relationships in one request.
-- [Get relationship type](https://docs.useboom.ai/api-reference/cdp-relationships/get-relationship-type.md): Read one relationship type by id.
-- [Link relationship](https://docs.useboom.ai/api-reference/cdp-relationships/link-relationship.md): Link a person to a custom object, or one custom object to another. Idempotent.
-- [List relationship types](https://docs.useboom.ai/api-reference/cdp-relationships/list-relationship-types.md): List the organization's relationship types — use it to discover valid link shapes before linking.
+- [Batch upsert people](https://docs.useboom.ai/api-reference/cdp-people/batch-upsert-people.md): Upsert up to 1000 people in one request. Idempotent and safely retryable.
+- [Delete person](https://docs.useboom.ai/api-reference/cdp-people/delete-person.md): Soft-delete a person and their outgoing links. Idempotent; behavioral events are kept.
+- [List objects](https://docs.useboom.ai/api-reference/cdp-custom-objects/list-objects.md): List custom objects of one type, newest first.
+- [Get object](https://docs.useboom.ai/api-reference/cdp-custom-objects/get-object.md): Read one custom object by type and external id.
+- [Upsert object](https://docs.useboom.ai/api-reference/cdp-custom-objects/upsert-object.md): Create or update a custom object by type and external id. The type must already exist; free-form attributes are fully replaced.
+- [Batch upsert objects](https://docs.useboom.ai/api-reference/cdp-custom-objects/batch-upsert-objects.md): Upsert up to 1000 custom objects in one request. Idempotent and safely retryable.
+- [Delete object](https://docs.useboom.ai/api-reference/cdp-custom-objects/delete-object.md): Soft-delete a custom object and its links. Idempotent.
+- [List events](https://docs.useboom.ai/api-reference/cdp-events/list-events.md): List events, newest first, with optional filters by name, subject, and time range.
+- [Get event](https://docs.useboom.ai/api-reference/cdp-events/get-event.md): Read one event by its external id.
+- [Record event](https://docs.useboom.ai/api-reference/cdp-events/record-event.md): Record one behavioral event for a person and/or custom object. This is the real-time path — it triggers journey enrollment. Unknown subjects still ingest and are linked later.
+- [Batch record events](https://docs.useboom.ai/api-reference/cdp-events/batch-record-events.md): Ingest up to 1000 events in one request, for bulk or historical loads. Unlike the single endpoint, this does not trigger journey enrollment.
 - [List relationships](https://docs.useboom.ai/api-reference/cdp-relationships/list-relationships.md): List relationship edges of one kind, anchored on a person or custom object, newest first.
-- [Register relationship type](https://docs.useboom.ai/api-reference/cdp-relationships/register-relationship-type.md): Register a relationship type and its metadata. Re-registering an existing type updates it in place.
+- [Link relationship](https://docs.useboom.ai/api-reference/cdp-relationships/link-relationship.md): Link a person to a custom object, or one custom object to another. Idempotent.
 - [Unlink relationship](https://docs.useboom.ai/api-reference/cdp-relationships/unlink-relationship.md): Unlink (soft-delete) a relationship. Idempotent.
-- [Add participants](https://docs.useboom.ai/api-reference/initiatives/add-participants.md): Add people to an active WhatsApp initiative. WARNING: each person added receives a real outbound WhatsApp message. Do-Not-Contact people are skipped.
-- [Archive initiative](https://docs.useboom.ai/api-reference/initiatives/archive-initiative.md): Archive a completed or canceled initiative, hiding it from the default list. Reversible with unarchive.
-- [Cancel initiative](https://docs.useboom.ai/api-reference/initiatives/cancel-initiative.md): Cancel an initiative and stop its conversations. Terminal. Requires an org admin.
-- [Create initiative](https://docs.useboom.ai/api-reference/initiatives/create-initiative.md): Create a draft initiative — only a name is required. For a WhatsApp initiative, link an approved template before launching.
-- [Data summary](https://docs.useboom.ai/api-reference/initiatives/data-summary.md): The initiative's data summary — participant count and, per captured variable, its coverage and rollup.
-- [Get initiative](https://docs.useboom.ai/api-reference/initiatives/get-initiative.md): Get one initiative by id.
-- [Get participant](https://docs.useboom.ai/api-reference/initiatives/get-participant.md): Get one participant's status and captured answers.
-- [Get templates](https://docs.useboom.ai/api-reference/initiatives/get-templates.md): List which WhatsApp template each outreach round sends. Round 1 must be linked before a WhatsApp initiative can launch.
-- [Launch initiative](https://docs.useboom.ai/api-reference/initiatives/launch-initiative.md): Launch a draft initiative — it goes active and Boom starts reaching out. A WhatsApp initiative needs an approved template first. Requires an org admin.
+- [Batch link / unlink](https://docs.useboom.ai/api-reference/cdp-relationships/batch-link-unlink.md): Link or unlink up to 1000 relationships in one request.
+- [List object types](https://docs.useboom.ai/api-reference/cdp-custom-objects/list-object-types.md): List the organization's custom object types.
+- [Get object type](https://docs.useboom.ai/api-reference/cdp-custom-objects/get-object-type.md): Read one custom object type by name.
+- [List relationship types](https://docs.useboom.ai/api-reference/cdp-relationships/list-relationship-types.md): List the organization's relationship types — use it to discover valid link shapes before linking.
+- [Get relationship type](https://docs.useboom.ai/api-reference/cdp-relationships/get-relationship-type.md): Read one relationship type by id.
+- [Create object type](https://docs.useboom.ai/api-reference/cdp-custom-objects/create-object-type.md): Create a custom object type — required before you can upsert objects of that kind.
+- [Register relationship type](https://docs.useboom.ai/api-reference/cdp-relationships/register-relationship-type.md): Register a relationship type and its metadata. Re-registering an existing type updates it in place.
+- [API](https://docs.useboom.ai/api-reference/overview.md): The REST API for acting on your customer data: build audiences, run initiatives, author the flow behind them, and read back what the conversations produced.
+- [Quickstart](https://docs.useboom.ai/quickstart.md): Create a person, an object type, an object, a relationship type, and a link.
+- [Authentication](https://docs.useboom.ai/authentication.md): Authenticate with an organization API key.
+- [Rate limits & errors](https://docs.useboom.ai/rate-limits-and-errors.md): Limits, headers, and the error shape used across all endpoints.
 - [List initiatives](https://docs.useboom.ai/api-reference/initiatives/list-initiatives.md): List the organization's initiatives, newest first. Archived initiatives are excluded.
-- [List participants](https://docs.useboom.ai/api-reference/initiatives/list-participants.md): List an initiative's participants and the values Boom captured from each, newest first.
-- [Participant messages](https://docs.useboom.ai/api-reference/initiatives/participant-messages.md): The participant's full conversation transcript for this initiative, in order.
-- [Set template](https://docs.useboom.ai/api-reference/initiatives/set-template.md): Link an approved WhatsApp template as a round's outreach message. Required before a WhatsApp initiative can launch.
-- [Stop participant](https://docs.useboom.ai/api-reference/initiatives/stop-participant.md): Stop all messaging to one participant and close their conversation. Idempotent and safe — it never sends. Their answers and transcript stay readable.
-- [Unarchive initiative](https://docs.useboom.ai/api-reference/initiatives/unarchive-initiative.md): Unarchive an initiative, restoring it to the default list. Its status is unchanged.
+- [Get initiative](https://docs.useboom.ai/api-reference/initiatives/get-initiative.md): Get one initiative by id.
+- [Create initiative](https://docs.useboom.ai/api-reference/initiatives/create-initiative.md): Create a draft initiative — only a name is required. For a WhatsApp initiative, link an approved template before launching.
 - [Update initiative](https://docs.useboom.ai/api-reference/initiatives/update-initiative.md): Edit a draft initiative. Only draft initiatives are editable.
-- [Add node](https://docs.useboom.ai/api-reference/journeys/add-node.md): Add one node to a draft journey. Positions are optional (auto-laid-out). Wire it up separately with journeys_connect_nodes.
-- [Condition catalog](https://docs.useboom.ai/api-reference/journeys/condition-catalog.md): List the person attributes and computed attributes available for DECISION and CASE CONDITIONS, plus the custom object types. Attribute tokens are ready to use as condition selection paths (e.g. attributes.plan, computed.ltv). NOTE: these `attributes.*` tokens are ONLY for DECISION/CASE conditions —…
-- [Connect nodes](https://docs.useboom.ai/api-reference/journeys/connect-nodes.md): Wire an edge from one node to another on a given output handle (the emitted signal, e.g. SENT, REPLIED, YES, case:<id>). A handle can wire to only one node.
-- [Create draft](https://docs.useboom.ai/api-reference/journeys/create-draft.md): Create a new draft journey on an initiative from a full graph. The draft is editable and does not run until published (which is done in the app). Omit node positions and the server lays the graph out automatically.
-- [Delete node](https://docs.useboom.ai/api-reference/journeys/delete-node.md): Remove one node and every edge connected to it from a draft journey.
-- [Disconnect nodes](https://docs.useboom.ai/api-reference/journeys/disconnect-nodes.md): Remove edges leaving a node. Narrow by target and/or handle; with neither, all outgoing edges from the node are removed.
-- [Event catalog](https://docs.useboom.ai/api-reference/journeys/event-catalog.md): List the CDP event names seen for your organization. Use these for a cdp_event trigger, a DISPATCH_EVENT node, or an event-based DECISION condition.
-- [Fork journey](https://docs.useboom.ai/api-reference/journeys/fork-journey.md): Copy a PUBLISHED journey into a fresh editable draft. The live version keeps running until the new draft is published. Use this to edit a live journey safely.
+- [Launch initiative](https://docs.useboom.ai/api-reference/initiatives/launch-initiative.md): Launch a draft initiative — it goes active and Boom starts reaching out. A WhatsApp initiative needs an approved template first; its journey is published as part of the launch (fails with the journey's issues if it cannot be). Requires an org admin.
+- [Cancel initiative](https://docs.useboom.ai/api-reference/initiatives/cancel-initiative.md): Cancel an initiative and stop its conversations. Terminal. Requires an org admin.
+- [Pause initiative](https://docs.useboom.ai/api-reference/initiatives/pause-initiative.md): Stop enrolling new people into this initiative. Anyone already enrolled keeps their run, and conversations in progress continue normally. Reversible with resume.
+- [Resume initiative](https://docs.useboom.ai/api-reference/initiatives/resume-initiative.md): Resume a paused initiative so it starts enrolling people again.
+- [Archive initiative](https://docs.useboom.ai/api-reference/initiatives/archive-initiative.md): Archive a completed or canceled initiative, hiding it from the default list. Reversible with unarchive.
+- [Unarchive initiative](https://docs.useboom.ai/api-reference/initiatives/unarchive-initiative.md): Unarchive an initiative, restoring it to the default list. Its status is unchanged.
+- [Get templates](https://docs.useboom.ai/api-reference/initiatives/get-templates.md): List which WhatsApp template each outreach round sends. Round 1 must be linked before a WhatsApp initiative can launch.
+- [Set template](https://docs.useboom.ai/api-reference/initiatives/set-template.md): Link an approved WhatsApp template as a round's outreach message. Required before a WhatsApp initiative can launch.
+- [Data summary](https://docs.useboom.ai/api-reference/initiatives/data-summary.md): The initiative's data summary — participant count and, per captured variable, its coverage and rollup.
+- [Add participants](https://docs.useboom.ai/api-reference/initiatives/add-participants.md): Add people to an active WhatsApp initiative. WARNING: each person added receives a real outbound WhatsApp message immediately. Requires a published journey. Do-Not-Contact people are skipped.
+- [List participants](https://docs.useboom.ai/api-reference/initiatives/list-participants.md): List an initiative's participants and the values Boom captured from each, newest first. Filter by personExternalId to find one person's runs — including the live one, to stop it before starting another.
+- [Get participant](https://docs.useboom.ai/api-reference/initiatives/get-participant.md): Get one participant's status and captured answers.
+- [Participant messages](https://docs.useboom.ai/api-reference/initiatives/participant-messages.md): The participant's conversation transcript, in order. Defaults to this initiative only; pass scope="customer" for everything this person ever said to you across initiatives — use that whenever you need to know whether someone answered at all, since a reply lands on whichever initiative was live at th…
+- [List transcripts](https://docs.useboom.ai/api-reference/initiatives/list-transcripts.md): Full conversation transcripts for a page of participants, newest participant first. Use this to read or export ALL conversations of an initiative — one call per page (up to 100 participants) instead of looping the per-participant messages endpoint.
+- [Stop participant](https://docs.useboom.ai/api-reference/initiatives/stop-participant.md): Stop all messaging to one participant and close their conversation. Idempotent and safe — it never sends. Their answers and transcript stay readable.
+- [List journeys](https://docs.useboom.ai/api-reference/journeys/list-journeys.md): List the organization's journeys, newest first. A journey is the step sequence people move through, attached to an initiative. Read-only.
 - [Get journey](https://docs.useboom.ai/api-reference/journeys/get-journey.md): Get one journey by id — its trigger and the ordered steps people move through. Read-only, for inspecting setup.
 - [Get journey definition](https://docs.useboom.ai/api-reference/journeys/get-journey-definition.md): Get a journey's full editable graph (all nodes, their config, and connections) so it can be modified and saved back. Unlike journeys_get, this is the complete authoring shape, not the sanitized public summary.
-- [List journeys](https://docs.useboom.ai/api-reference/journeys/list-journeys.md): List the organization's journeys, newest first. A journey is the step sequence people move through, attached to an initiative. Read-only.
+- [Node catalog](https://docs.useboom.ai/api-reference/journeys/node-catalog.md): Describes every journey node kind — its inputs, its output handles (the signals it can emit), and the rules for connecting nodes. Read this before building or editing a journey.
+- [Validate journey](https://docs.useboom.ai/api-reference/journeys/validate-journey.md): Dry-run the publish checks against a journey graph without saving. Pass a `journeyId` to validate the stored draft, or a `definition` to validate a graph as sent (exactly one of the two). Returns whether it is valid and the list of issues (errors block publishing; warnings are advisory). Use it to i…
+- [Create draft](https://docs.useboom.ai/api-reference/journeys/create-draft.md): Create a new draft journey on an initiative from a full graph. The draft is editable and does not run until published (which is done in the app). Omit node positions and the server lays the graph out automatically.
+- [Update draft](https://docs.useboom.ai/api-reference/journeys/update-draft.md): Replace a draft journey's whole graph. Journey-level metadata is merged, not replaced — keys the payload omits (e.g. the environment pin) keep their stored values. Only drafts can be edited; published versions are frozen (edit a live journey in the app to fork a new draft). Omit node positions and t…
+- [Add node](https://docs.useboom.ai/api-reference/journeys/add-node.md): Add one node to a draft journey. Positions are optional (auto-laid-out). Wire it up separately with journeys_connect_nodes.
+- [Update node](https://docs.useboom.ai/api-reference/journeys/update-node.md): Update one node's name, position, and/or config (inputs shallow-merge). Use journeys_authoring_catalog for a node kind's input fields.
+- [Delete node](https://docs.useboom.ai/api-reference/journeys/delete-node.md): Remove one node and every edge connected to it from a draft journey.
+- [Connect nodes](https://docs.useboom.ai/api-reference/journeys/connect-nodes.md): Wire an edge from one node to another on a given output handle (the emitted signal, e.g. SENT, REPLIED, YES, case:<id>). A handle can wire to only one node.
+- [Disconnect nodes](https://docs.useboom.ai/api-reference/journeys/disconnect-nodes.md): Remove edges leaving a node. Narrow by target and/or handle; with neither, all outgoing edges from the node are removed.
+- [Set trigger](https://docs.useboom.ai/api-reference/journeys/set-trigger.md): Configure how people enter the journey by updating its ENTRY node: manual, segment (needs segmentId), or cdp_event (needs eventName), with an optional frequency cap.
+- [Fork journey](https://docs.useboom.ai/api-reference/journeys/fork-journey.md): Copy a PUBLISHED journey into a fresh editable draft. The live version keeps running until the new draft is published. Use this to edit a live journey safely.
+- [Publish journey](https://docs.useboom.ai/api-reference/journeys/publish-journey.md): Publish a draft journey so it goes live and starts enrolling people (this begins real outreach). Validates first and requires confirm: true. The trigger is taken from the ENTRY node. Any previously live version is retired.
+- [Stop journey](https://docs.useboom.ai/api-reference/journeys/stop-journey.md): Retire a live journey: no one else is enrolled, and anyone already enrolled who has not been messaged yet is dropped before their message goes out. Conversations already in progress continue normally. Requires confirm: true. This cannot be undone — re-running the campaign means publishing again.
 - [List message channels](https://docs.useboom.ai/api-reference/journeys/list-message-channels.md): List the WhatsApp channels a SEND_MESSAGE node can send from. Use a channel id as channelId on the node and to look up its approved templates.
 - [List message templates](https://docs.useboom.ai/api-reference/journeys/list-message-templates.md): List the approved WhatsApp templates a SEND_MESSAGE node can use from a given channel. A template belongs to one channel account, so pass the same channelId you pin on the node.
-- [Message variable catalog](https://docs.useboom.ai/api-reference/journeys/message-variable-catalog.md): List the variables a SEND_MESSAGE template binding can reference for a journey — the same set the builder offers. Bind a template placeholder to one of the returned `path` values (custom person attributes are `person.<key>`, NOT `attributes.<key>` — that is the DECISION/CASE condition syntax). Pass…
-- [Node catalog](https://docs.useboom.ai/api-reference/journeys/node-catalog.md): Describes every journey node kind — its inputs, its output handles (the signals it can emit), and the rules for connecting nodes. Read this before building or editing a journey.
-- [Publish journey](https://docs.useboom.ai/api-reference/journeys/publish-journey.md): Publish a draft journey so it goes live and starts enrolling people (this begins real outreach). Validates first and requires confirm: true. The trigger is taken from the ENTRY node. Any previously live version is retired.
-- [Set trigger](https://docs.useboom.ai/api-reference/journeys/set-trigger.md): Configure how people enter the journey by updating its ENTRY node: manual, segment (needs segmentId), or cdp_event (needs eventName), with an optional frequency cap.
-- [Update draft](https://docs.useboom.ai/api-reference/journeys/update-draft.md): Replace a draft journey's whole graph. Only drafts can be edited; published versions are frozen (edit a live journey in the app to fork a new draft). Omit node positions and the server lays the graph out automatically.
-- [Update node](https://docs.useboom.ai/api-reference/journeys/update-node.md): Update one node's name, position, and/or config (inputs shallow-merge). Use journeys_authoring_catalog for a node kind's input fields.
-- [Validate journey](https://docs.useboom.ai/api-reference/journeys/validate-journey.md): Dry-run the publish checks against a journey graph without saving. Returns whether it is valid and the list of issues (errors block publishing; warnings are advisory). Use it to iterate a draft to valid before publishing in the app.
-- [API](https://docs.useboom.ai/api-reference/overview.md): The REST API for acting on your customer data — build audiences, run WhatsApp initiatives, and read back results.
-- [Create a segment](https://docs.useboom.ai/api-reference/segments/create-a-segment.md): Create a segment from a filter expression. It starts empty until evaluated. Validate and preview the filter first.
-- [Delete a segment](https://docs.useboom.ai/api-reference/segments/delete-a-segment.md): Remove a segment. It disappears from all lists and its journey triggers are disconnected. Idempotent.
-- [Evaluate a segment now](https://docs.useboom.ai/api-reference/segments/evaluate-a-segment-now.md): Re-evaluate a segment's membership now instead of waiting for its cadence. Runs synchronously; can take a while for large organizations.
-- [Get a segment](https://docs.useboom.ai/api-reference/segments/get-a-segment.md): Get one segment by slug, with a live member count.
-- [Get the segment filter catalog](https://docs.useboom.ai/api-reference/segments/get-the-segment-filter-catalog.md): Everything filterable in your organization — person attributes, related data, and computed variables — with the token and operators to use for each. Read this first when building a filter.
-- [List segment members](https://docs.useboom.ai/api-reference/segments/list-segment-members.md): List a segment's active members, newest first.
+- [Event catalog](https://docs.useboom.ai/api-reference/journeys/event-catalog.md): List the CDP event names seen for your organization. Use these for a cdp_event trigger, a DISPATCH_EVENT node, or an event-based DECISION condition.
+- [Condition catalog](https://docs.useboom.ai/api-reference/journeys/condition-catalog.md): List the person attributes and computed attributes available for DECISION and CASE CONDITIONS, plus the custom object types. Attribute tokens are ready to use as condition selection paths (e.g. attributes.plan, computed.ltv). NOTE: these `attributes.*` tokens are ONLY for DECISION/CASE conditions —…
+- [Message variable catalog](https://docs.useboom.ai/api-reference/journeys/message-variable-catalog.md): List the variables a SEND_MESSAGE template binding can reference for a journey — the same set the builder offers, and the authority on what resolves for THIS journey (when docs and this catalog disagree, trust the catalog). customer.* and person.* are offered for every trigger type (person.* is read…
 - [List segments](https://docs.useboom.ai/api-reference/segments/list-segments.md): List the organization's active segments, newest first. Archived segments are excluded.
-- [Preview a segment filter](https://docs.useboom.ai/api-reference/segments/preview-a-segment-filter.md): Count how many people currently match a filter, without saving. Use it to check the audience before saving a segment.
-- [Update a segment](https://docs.useboom.ai/api-reference/segments/update-a-segment.md): Update a segment in place; the slug is permanent. Changing the filter doesn't re-evaluate membership until the next evaluation.
+- [Get a segment](https://docs.useboom.ai/api-reference/segments/get-a-segment.md): Get one segment by slug, with a live member count.
+- [List segment members](https://docs.useboom.ai/api-reference/segments/list-segment-members.md): List a segment's active members, newest first.
+- [Get the segment filter catalog](https://docs.useboom.ai/api-reference/segments/get-the-segment-filter-catalog.md): Everything filterable in your organization — person attributes, related data, and computed variables — with the token and operators to use for each. Read this first when building a filter.
 - [Validate a segment filter](https://docs.useboom.ai/api-reference/segments/validate-a-segment-filter.md): Dry-run a filter expression against your live catalog — nothing is saved. Returns whether it's valid, or the field to fix.
-- [Create template](https://docs.useboom.ai/api-reference/whatsapp-templates/create-template.md): Create a WhatsApp template and submit it for WhatsApp approval, which is asynchronous (~24–48h). Example (TEXT): `{ "name": "order_shipped", "language": "es", "category": "UTILITY", "contentType": "TEXT", "content": { "body": "Hola {{1}}, tu pedido ya salió." }, "variables": { "1": "Ana" } }`. Examp…
-- [Get template](https://docs.useboom.ai/api-reference/whatsapp-templates/get-template.md): Get one WhatsApp template by id, including its approval status and any rejection reason.
+- [Create a segment](https://docs.useboom.ai/api-reference/segments/create-a-segment.md): Create a segment from a filter expression. It starts empty until evaluated. Validate and preview the filter first.
+- [Update a segment](https://docs.useboom.ai/api-reference/segments/update-a-segment.md): Update a segment in place; the slug is permanent. Changing the filter doesn't re-evaluate membership until the next evaluation.
+- [Delete a segment](https://docs.useboom.ai/api-reference/segments/delete-a-segment.md): Remove a segment. It disappears from all lists and its journey triggers are disconnected. Idempotent.
+- [Preview a segment filter](https://docs.useboom.ai/api-reference/segments/preview-a-segment-filter.md): Count how many people currently match a filter, without saving. Use it to check the audience before saving a segment.
+- [Evaluate a segment now](https://docs.useboom.ai/api-reference/segments/evaluate-a-segment-now.md): Re-evaluate a segment's membership now instead of waiting for its cadence. Runs synchronously; can take a while for large organizations.
 - [List numbers](https://docs.useboom.ai/api-reference/whatsapp-templates/list-numbers.md): List the WhatsApp numbers connected to your organization. Use them when creating templates.
 - [List templates](https://docs.useboom.ai/api-reference/whatsapp-templates/list-templates.md): List your WhatsApp templates and each one's approval status. Reviews are async (~24–48h) — re-read to see updates.
-- [Authentication](https://docs.useboom.ai/authentication.md): Authenticate with an organization API key.
-- [Customer Data Platform](https://docs.useboom.ai/cdp/overview.md): The REST API for getting customer data into Boom — people, custom objects, events, and the relationships between them.
-- [Connect your database](https://docs.useboom.ai/connect-your-database.md): Sync customers into the Boom CDP straight from your own PostgreSQL or MySQL database.
-- [Events](https://docs.useboom.ai/events.md): Record behavioral events, then read and list them back.
-- [Documentation](https://docs.useboom.ai/introduction.md): Bring your customer data into Boom and turn it into AI-driven conversations over WhatsApp, email, and voice — one platform, two matching surfaces: REST and MCP.
-- [One uniform surface](https://docs.useboom.ai/one-surface.md): Every capability is defined once and exposed identically over REST and MCP — same names, same inputs, same errors.
-- [Quickstart](https://docs.useboom.ai/quickstart.md): Create a person, an object type, an object, a relationship type, and a link.
-- [Rate limits & errors](https://docs.useboom.ai/rate-limits-and-errors.md): Limits, headers, and the error shape used across all endpoints.
-- [Relationship types](https://docs.useboom.ai/relationship-types.md): Register the catalog of link shapes — and the data you need to do it correctly.
-- [Skills](https://docs.useboom.ai/skills.md): Install Boom's Agent Skills so Claude can run customer research end-to-end over Boom.
-- [Template variables](https://docs.useboom.ai/template-variables.md): How to bind a WhatsApp template's placeholders to live data in a journey.
-- [Use MCP](https://docs.useboom.ai/use-mcp.md): Connect Boom to Claude, Cursor, or any AI tool. Add one link, sign in — no API key.
+- [Create template](https://docs.useboom.ai/api-reference/whatsapp-templates/create-template.md): Create a WhatsApp template and submit it for WhatsApp approval, which is asynchronous (~24–48h). Example (TEXT): `{ "name": "order_shipped", "language": "es", "category": "UTILITY", "contentType": "TEXT", "content": { "body": "Hola {{1}}, tu pedido ya salió." }, "variables": { "1": "Ana" } }`. Examp…
+- [Get template](https://docs.useboom.ai/api-reference/whatsapp-templates/get-template.md): Get one WhatsApp template by id, including its approval status and any rejection reason.
 
 ## OpenAPI Specs
 

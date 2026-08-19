@@ -1,0 +1,136 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Boom CDP Custom Objects CDP People API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "CDP People",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List people",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/cdp/people",
+            "params": [
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "cursor",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "List the organization's people, newest first."
+        },
+        {
+          "info": {
+            "name": "Upsert person",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/cdp/people",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create or update a person by external id. Free-form attributes are fully replaced on each write."
+        },
+        {
+          "info": {
+            "name": "Get person",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/cdp/people/:externalId",
+            "params": [
+              {
+                "name": "externalId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Read one person by their external id."
+        },
+        {
+          "info": {
+            "name": "Delete person",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://www.useboom.ai/api/v1/cdp/people/:externalId",
+            "params": [
+              {
+                "name": "externalId",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Soft-delete a person and their outgoing links. Idempotent; behavioral events are kept."
+        },
+        {
+          "info": {
+            "name": "Batch upsert people",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://www.useboom.ai/api/v1/cdp/people/batch",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Upsert up to 1000 people in one request. Idempotent and safely retryable."
+        },
+        {
+          "info": {
+            "name": "Search people",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/cdp/people/search",
+            "params": [
+              {
+                "name": "query",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Search the organization's people by name, or a partial email / phone / externalId. Returns a relevance-ranked shortlist."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

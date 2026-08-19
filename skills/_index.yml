@@ -1,16 +1,102 @@
-generated: '2026-07-18'
-method: generated
-source: openapi/boom-ai-openapi-original.json
+generated: '2026-08-13'
+method: searched
+source: >-
+  Boom publishes its own Agent Skills. Ten are open source at
+  https://github.com/BOOM-TML/skills (MIT), installed with `npx @useboom/skills-setup`;
+  an eleventh combined document is served from the A2A agent card at
+  https://docs.useboom.ai/.well-known/agent-skills/boom/skill.md. All eleven are saved
+  VERBATIM below (boom-ai-published-*.md). The three boom-ai-*.md files without the
+  `published-` prefix are API Evangelist generations grounded in REST operationIds and
+  are kept as the REST-side complement — the provider's skills are written against the
+  MCP tool surface.
+published_skills_source:
+  repo: https://github.com/BOOM-TML/skills
+  license: MIT
+  last_pushed: '2026-07-28'
+  installer: npx @useboom/skills-setup
+  marketplace: '{"extraKnownMarketplaces":{"boom":{"source":{"source":"github","repo":"BOOM-TML/skills"},"autoUpdate":true}}}'
+  docs: https://docs.useboom.ai/skills
+  runtime: Boom's hosted MCP server (https://www.useboom.ai/mcp) — interactive sign-in, no API key
 skills:
+  # ---- provider-published, saved verbatim (method: searched) ----
+  - file: boom-ai-published-skill.md
+    name: Boom
+    method: searched
+    source: https://docs.useboom.ai/.well-known/agent-skills/boom/skill.md
+    referenced_by: a2a/boom-ai-agent-card.json (skills[0].url)
+    description: >-
+      The combined skill the A2A agent card points at — building customer outreach
+      campaigns, managing AI conversations over WhatsApp, segments, journeys, customer
+      data, and structured extraction.
+  - file: boom-ai-published-boom-overview.md
+    name: boom-overview
+    method: searched
+    source: https://github.com/BOOM-TML/skills/blob/main/skills/boom-overview/SKILL.md
+    description: Orientation and router — what Boom is and which skill applies. Read first.
+  - file: boom-ai-published-onboarding.md
+    name: onboarding
+    method: searched
+    source: https://github.com/BOOM-TML/skills/blob/main/skills/onboarding/SKILL.md
+    description: Guided hands-on first run — first initiative, journey, WhatsApp opener, test contact.
+  - file: boom-ai-published-connect-your-data.md
+    name: connect-your-data
+    method: searched
+    source: https://github.com/BOOM-TML/skills/blob/main/skills/connect-your-data/SKILL.md
+    description: Get customer data in — PostgreSQL/MySQL/Shopify/Skio sync, SSH tunnel, CSV, or the API.
+  - file: boom-ai-published-cdp-and-segments.md
+    name: cdp-and-segments
+    method: searched
+    source: https://github.com/BOOM-TML/skills/blob/main/skills/cdp-and-segments/SKILL.md
+    tools: [cdp_people_list, cdp_people_get, segments_catalog, segments_validate, segments_preview, segments_create, segments_evaluate, segments_members_list]
+    description: Query the CDP and build or refresh a saved segment.
+  - file: boom-ai-published-build-knowledge-base.md
+    name: build-knowledge-base
+    method: searched
+    source: https://github.com/BOOM-TML/skills/blob/main/skills/build-knowledge-base/SKILL.md
+    description: Guided interview producing the agent's brand identity and per-job briefs.
+  - file: boom-ai-published-whatsapp-templates.md
+    name: whatsapp-templates
+    method: searched
+    source: https://github.com/BOOM-TML/skills/blob/main/skills/whatsapp-templates/SKILL.md
+    tools: [templates_list, templates_get, templates_create, whatsapp_numbers_list]
+    description: Create, fix, or choose the Meta-approved WhatsApp opener.
+  - file: boom-ai-published-design-journey.md
+    name: design-journey
+    method: searched
+    source: https://github.com/BOOM-TML/skills/blob/main/skills/design-journey/SKILL.md
+    tools: [journeys_create_draft, journeys_add_node, journeys_connect_nodes, journeys_set_trigger, journeys_validate, journeys_publish, journeys_authoring_catalog, journeys_condition_catalog]
+    description: Build, review, debug the journey graph node by node, then publish.
+  - file: boom-ai-published-launch-initiative.md
+    name: launch-initiative
+    method: searched
+    source: https://github.com/BOOM-TML/skills/blob/main/skills/launch-initiative/SKILL.md
+    tools: [initiatives_create, initiatives_update, initiatives_templates_set, initiatives_participants_add, initiatives_launch]
+    description: Objective, context, guiding questions, opening template, enrollment, launch.
+  - file: boom-ai-published-manage-participants.md
+    name: manage-participants
+    method: searched
+    source: https://github.com/BOOM-TML/skills/blob/main/skills/manage-participants/SKILL.md
+    tools: [initiatives_list, initiatives_participants_add, initiatives_participants_list, initiatives_participant_get, initiatives_participant_messages_list, initiatives_participants_stop]
+    description: Add, check, stop, and read participants on an existing initiative.
+  - file: boom-ai-published-analyze-results.md
+    name: analyze-results
+    method: searched
+    source: https://github.com/BOOM-TML/skills/blob/main/skills/analyze-results/SKILL.md
+    tools: [initiatives_list, initiatives_get, initiatives_summary, initiatives_participant_messages_list]
+    description: Read-only synthesis of a running initiative's data summary and transcripts.
+  # ---- API Evangelist generated, grounded in REST operationIds (method: generated) ----
   - file: boom-ai-ingest-people-and-events.md
     name: Ingest people and behavioral events into Boom
-    api: openapi/boom-ai-openapi-original.json
+    method: generated
+    api: openapi/_original/boom-ai-openapi-original.json
     operations: [cdp_people_upsert, cdp_people_batch_upsert, cdp_people_get, cdp_events_record, cdp_events_batch_record, cdp_custom_objects_upsert]
   - file: boom-ai-run-whatsapp-initiative.md
     name: Create and launch a WhatsApp initiative
-    api: openapi/boom-ai-openapi-original.json
+    method: generated
+    api: openapi/_original/boom-ai-openapi-original.json
     operations: [initiatives_create, initiatives_templates_set, initiatives_launch, initiatives_participants_add, initiatives_participant_messages_list, initiatives_summary, initiatives_participants_stop]
   - file: boom-ai-build-and-evaluate-segment.md
     name: Build, validate, and evaluate a Boom segment
-    api: openapi/boom-ai-openapi-original.json
+    method: generated
+    api: openapi/_original/boom-ai-openapi-original.json
     operations: [segments_catalog, segments_validate, segments_preview, segments_create, segments_evaluate, segments_members_list]

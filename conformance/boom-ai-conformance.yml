@@ -1,26 +1,79 @@
-generated: '2026-07-18'
-method: derived
-source: openapi/boom-ai-openapi-original.json
+generated: '2026-08-13'
+method: searched
+source: >-
+  openapi/_original/boom-ai-openapi-original.json plus probed discovery documents
+  (RFC 9728 / RFC 8414 / OIDC / A2A) and the Boom docs.
 standards:
   - id: openapi-3.1
     conforms: true
-    evidence: openapi document declares openapi 3.1.0
+    evidence: openapi document declares openapi 3.1.0 with 86 operations across 64 paths
   - id: http-bearer-auth
     conforms: true
     evidence: components.securitySchemes bearerAuth type http scheme bearer, applied globally
   - id: oauth2
-    conforms: false
-    evidence: no oauth2 security scheme in the REST spec (MCP uses interactive OAuth login)
+    conforms: true
+    scope: MCP server only — the REST API has no OAuth surface
+    evidence: >-
+      https://clerk.useboom.ai/.well-known/oauth-authorization-server (200) declares
+      authorization_code + refresh_token, PKCE-era endpoints and dynamic client registration
+  - id: rfc8414-authorization-server-metadata
+    conforms: true
+    evidence: https://clerk.useboom.ai/.well-known/oauth-authorization-server returns 200
+  - id: rfc9728-protected-resource-metadata
+    conforms: true
+    evidence: >-
+      https://www.useboom.ai/.well-known/oauth-protected-resource/mcp returns 200 and is
+      advertised in the MCP endpoint's WWW-Authenticate challenge
+  - id: openid-connect-discovery
+    conforms: true
+    scope: MCP sign-in only
+    evidence: https://clerk.useboom.ai/.well-known/openid-configuration returns 200 with userinfo + jwks
+  - id: mcp
+    conforms: true
+    evidence: hosted streamable-HTTP MCP server at https://www.useboom.ai/mcp (401 anonymous, OAuth-gated)
+  - id: a2a-1.0.0
+    conforms: true
+    grade: conformant
+    evidence: >-
+      https://docs.useboom.ai/.well-known/agent-card.json returns 200 with capabilities as
+      an object, protocolVersion 0.3 and skills as an array; deviates on supportedInterfaces
+      vs additionalInterfaces (see a2a/boom-ai-a2a.yml)
+  - id: agent-skills
+    conforms: true
+    evidence: eleven provider-authored Agent Skills — github.com/BOOM-TML/skills (MIT) and the card-referenced skill.md
   - id: rfc9457-problem-details
     conforms: false
     evidence: errors use a custom '{error:{code,message}}' envelope, not application/problem+json
+  - id: rfc9116-security-txt
+    conforms: false
+    evidence: /.well-known/security.txt returns 404 on every Boom host
+  - id: rfc8594-sunset-header
+    conforms: false
+    evidence: no Sunset/Deprecation header support or deprecation policy published
+  - id: asyncapi
+    conforms: false
+    evidence: >-
+      Boom ships a real outbound webhook surface (3 event types) but publishes no AsyncAPI
+      document — see asyncapi/boom-ai-webhooks.yml
   - id: cursor-pagination
     conforms: true
     evidence: list operations accept cursor+limit and return data+next_cursor
   - id: idempotency
     conforms: true
-    evidence: upsert-by-externalId writes and /batch endpoints documented as idempotent and safely retryable
+    evidence: >-
+      upsert-by-externalId writes and /batch endpoints documented idempotent and safely
+      retryable; webhook deliveries carry an Idempotency-Key header
   - id: rate-limit-headers
     conforms: true
-    evidence: 429 responses document Retry-After and X-RateLimit-* headers (1000 req/min per key)
-compliance_program: none published
+    evidence: >-
+      X-RateLimit-Limit/Remaining/Reset on every response, Retry-After on 429
+      (1000 req/min per key; 20 req/min on /batch)
+compliance_program:
+  published: true
+  trust_center: https://trust.useboom.ai/
+  certifications:
+    - {name: SOC 2 Type 1, status: report completed}
+    - {name: SOC 2 Type 2, status: examination in progress}
+  source: https://useboom.ai/ (Security & trust section) + security/boom-ai-trust-center.yml
+x-evidence:
+  checked: '2026-08-13'

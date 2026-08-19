@@ -1,0 +1,35 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Boom CDP Custom Objects CDP Sources API",
+    "version": "1.0.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "CDP Sources",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List sources",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://www.useboom.ai/api/v1/cdp/sources"
+          },
+          "docs": "List the org's connected data sources (e.g. Shopify, Skio) with their provider and status. Use to confirm an integration like Shopify is connected and ACTIVE before building a journey that depends on it."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
