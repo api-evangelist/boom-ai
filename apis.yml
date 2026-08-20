@@ -51,6 +51,19 @@ tags:
 - WhatsApp
 - SMS
 - Marketing Automation
+- E-Commerce
+- Agents
+- MCP
+tags_raw:
+- Company
+- Artificial Intelligence
+- Conversational AI
+- Customer Engagement
+- Customer Data Platform
+- Messaging
+- WhatsApp
+- SMS
+- Marketing Automation
 - E-commerce
 - Agents
 - MCP
@@ -187,6 +200,8 @@ apis:
   humanURL: https://docs.useboom.ai
   baseURL: https://www.useboom.ai
   tags:
+  - WhatsApp Templates
+  tags_raw:
   - WhatsApp templates
   properties:
   - type: OpenAPI
