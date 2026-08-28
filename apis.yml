@@ -13,6 +13,19 @@ description: >-
   uses cursor pagination, 1,000 requests/minute rate limits with X-RateLimit-*/Retry-After
   signaling, and idempotent upsert plus up-to-1000-record batch endpoints.
 url: https://raw.githubusercontent.com/api-evangelist/boom-ai/refs/heads/main/apis.yml
+deliveryModel:
+  model: unknown
+  open_source: unknown
+  commercial: true
+  callable_host: true
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - openapi
+  - pricing
+  - repository-unlicensed
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: unknown
   onboarding: self-serve
