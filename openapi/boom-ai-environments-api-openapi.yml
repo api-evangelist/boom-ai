@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Boom HTTP credentials API
+  title: Boom Environments API
   version: 1.0.0
   description: 'Boom''s public REST API — one uniform surface over every platform capability. CDP: upsert people and custom objects, define object and relationship types, link and unlink relationships, and record behavioral events — one record per request or up to 1000 per request via the `/batch` endpoints. Segments: read (list, read, membership) and full authoring — discover the filterable catalog, validate a filter, create and update segments, preview match counts, and trigger evaluation. Initiatives: create and configure outreach initiatives, link WhatsApp templates, drive the lifecycle (launch, cancel, archive), and read collected-data summaries. Participants: enroll people into an active initiative, track their status, read conversation transcripts, and stop outreach. Journeys: read-only access to always-on message flows and their metrics. WhatsApp templates: list your WhatsApp numbers and list, read, and create message templates. The same capabilities are exposed as MCP tools with identical schemas.'
 servers:
@@ -11,15 +11,15 @@ servers:
 security:
 - bearerAuth: []
 tags:
-- name: HTTP credentials
+- name: Environments
 paths:
-  /api/v1/http-credentials:
+  /api/v1/environments:
     get:
-      operationId: http_credentials_list
-      summary: List HTTP credentials
-      description: List the reusable HTTP credentials configured for your organization. Reference a credential by its logical `key` (environment-aware) or its `id` to authenticate an HTTP Request journey node. Secrets are never returned.
+      operationId: environments_list
+      summary: List environments
+      description: List your organization's journey environments and the `{{env.*}}` variable keys each one defines. A journey pinned to an environment resolves those variables and its environment-scoped HTTP credentials at run time. Variable values are not returned.
       tags:
-      - HTTP credentials
+      - Environments
       responses:
         '200':
           description: Success
@@ -36,30 +36,21 @@ paths:
                       properties:
                         id:
                           type: string
-                        key:
-                          type: string
-                          description: Stable logical key used to reference this credential from an HTTP Request node. A pre-migration legacy row may have an empty key until it is backfilled.
                         name:
                           type: string
-                        authType:
-                          type: string
-                          enum:
-                          - NONE
-                          - API_KEY
-                          - BEARER
-                          - BASIC
-                          description: 'How the request authenticates: NONE, API_KEY, BEARER, or BASIC.'
-                        environmentId:
-                          anyOf:
-                          - type: string
-                          - type: 'null'
-                          description: The environment this credential is scoped to; null is a Global credential that resolves in every environment. The same key can have a Global row plus per-environment overrides.
+                        isDefault:
+                          type: boolean
+                          description: The environment a journey with no environment pinned falls back to for its `{{env.*}}` values.
+                        variableKeys:
+                          type: array
+                          items:
+                            type: string
+                          description: The keys defined for this environment, referenceable as `{{env.<key>}}`. Values are omitted.
                       required:
                       - id
-                      - key
                       - name
-                      - authType
-                      - environmentId
+                      - isDefault
+                      - variableKeys
                       additionalProperties: false
                   next_cursor:
                     type: 'null'

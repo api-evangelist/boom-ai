@@ -1,16 +1,7 @@
 {
   "provider": "boom-ai",
   "sources": [
-    "boom-ai-cdp-custom-objects-api-openapi.yml",
-    "boom-ai-cdp-events-api-openapi.yml",
-    "boom-ai-cdp-people-api-openapi.yml",
-    "boom-ai-cdp-relationships-api-openapi.yml",
-    "boom-ai-cdp-sources-api-openapi.yml",
-    "boom-ai-http-credentials-api-openapi.yml",
-    "boom-ai-initiatives-api-openapi.yml",
-    "boom-ai-journeys-api-openapi.yml",
-    "boom-ai-segments-api-openapi.yml",
-    "boom-ai-whatsapp-templates-api-openapi.yml"
+    "_original/boom-ai-openapi-original.json"
   ],
   "outputs": [
     "boom-ai-cdp-custom-objects-api-openapi.yml",
@@ -18,6 +9,7 @@
     "boom-ai-cdp-people-api-openapi.yml",
     "boom-ai-cdp-relationships-api-openapi.yml",
     "boom-ai-cdp-sources-api-openapi.yml",
+    "boom-ai-environments-api-openapi.yml",
     "boom-ai-http-credentials-api-openapi.yml",
     "boom-ai-initiatives-api-openapi.yml",
     "boom-ai-journeys-api-openapi.yml",
@@ -27,6 +19,31 @@
   "archived": [],
   "errors": [],
   "warnings": [],
-  "notes": [],
-  "skipped": []
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "boom-ai-openapi-original.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "boom-ai-openapi-original.json: declared missing tag: CDP Custom Objects",
+    "boom-ai-openapi-original.json: declared missing tag: CDP Events",
+    "boom-ai-openapi-original.json: declared missing tag: CDP People",
+    "boom-ai-openapi-original.json: declared missing tag: CDP Relationships",
+    "boom-ai-openapi-original.json: declared missing tag: CDP Sources",
+    "boom-ai-openapi-original.json: declared missing tag: Environments",
+    "boom-ai-openapi-original.json: declared missing tag: HTTP credentials",
+    "boom-ai-openapi-original.json: declared missing tag: Initiatives",
+    "boom-ai-openapi-original.json: declared missing tag: Journeys",
+    "boom-ai-openapi-original.json: declared missing tag: Segments",
+    "boom-ai-openapi-original.json: declared missing tag: WhatsApp templates"
+  ],
+  "skipped": [
+    "boom-ai-cdp-custom-objects-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "boom-ai-cdp-events-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "boom-ai-cdp-people-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "boom-ai-cdp-relationships-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "boom-ai-cdp-sources-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "boom-ai-http-credentials-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "boom-ai-initiatives-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "boom-ai-journeys-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "boom-ai-segments-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "boom-ai-whatsapp-templates-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

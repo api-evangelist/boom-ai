@@ -1,6 +1,6 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
-  title: Boom CDP Custom Objects Initiatives API
+  title: Boom Initiatives API
   version: 1.0.0
   description: 'Boom''s public REST API — one uniform surface over every platform capability. CDP: upsert people and custom objects, define object and relationship types, link and unlink relationships, and record behavioral events — one record per request or up to 1000 per request via the `/batch` endpoints. Segments: read (list, read, membership) and full authoring — discover the filterable catalog, validate a filter, create and update segments, preview match counts, and trigger evaluation. Initiatives: create and configure outreach initiatives, link WhatsApp templates, drive the lifecycle (launch, cancel, archive), and read collected-data summaries. Participants: enroll people into an active initiative, track their status, read conversation transcripts, and stop outreach. Journeys: read-only access to always-on message flows and their metrics. WhatsApp templates: list your WhatsApp numbers and list, read, and create message templates. The same capabilities are exposed as MCP tools with identical schemas.'
 servers:
@@ -336,7 +336,7 @@ paths:
                 context:
                   description: Background the conversation draws on.
                   type: string
-                  maxLength: 5000
+                  maxLength: 20000
                 maxAttempts:
                   description: Outreach attempts per participant. Default 3.
                   type: integer
@@ -1082,7 +1082,7 @@ paths:
                 context:
                   description: Background the conversation draws on.
                   type: string
-                  maxLength: 5000
+                  maxLength: 20000
                 maxAttempts:
                   description: Outreach attempts per participant. Default 3.
                   type: integer
@@ -3112,7 +3112,7 @@ paths:
     post:
       operationId: initiatives_launch
       summary: Launch initiative
-      description: Launch a draft initiative — it goes active and Boom starts reaching out. A WhatsApp initiative needs an approved template first. Requires an org admin.
+      description: Launch a draft initiative — it goes active and Boom starts reaching out. A WhatsApp initiative needs an approved template first; its journey is published as part of the launch (fails with the journey's issues if it cannot be). Requires an org admin.
       tags:
       - Initiatives
       parameters:
@@ -3439,7 +3439,7 @@ paths:
     get:
       operationId: initiatives_participants_list
       summary: List participants
-      description: List an initiative's participants and the values Boom captured from each, newest first.
+      description: List an initiative's participants and the values Boom captured from each, newest first. Filter by personExternalId to find one person's runs — including the live one, to stop it before starting another.
       tags:
       - Initiatives
       parameters:
@@ -3451,6 +3451,15 @@ paths:
           type: string
           minLength: 1
           description: Initiative id.
+      - name: personExternalId
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Return only this person's runs, matched on the external id recorded when the run started. Exact match, case-sensitive. Participants enrolled without an external id are never returned, so an empty result means no run carries this id — not that the person has no run.
+          type: string
+          minLength: 1
+          maxLength: 255
       - name: limit
         in: query
         required: false
@@ -3512,6 +3521,11 @@ paths:
                           - type: string
                           - type: 'null'
                           description: When values were last captured (ISO 8601), if any.
+                        extractionStatus:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                          description: 'PENDING (queued, not yet run), EXTRACTED (ran and wrote), INSUFFICIENT_DATA (nothing extractable here — too few messages or no reply on THIS initiative), FAILED, or null for a participant whose extraction has never been triggered. INSUFFICIENT_DATA does NOT mean the person never replied: check their other initiatives with scope="customer" on the messages endpoint.'
                         values:
                           type: object
                           propertyNames:
@@ -3529,6 +3543,7 @@ paths:
                       - messageCount
                       - createdAt
                       - capturedAt
+                      - extractionStatus
                       - values
                       additionalProperties: false
                   next_cursor:
@@ -3702,7 +3717,7 @@ paths:
     post:
       operationId: initiatives_participants_add
       summary: Add participants
-      description: 'Add people to an active WhatsApp initiative. WARNING: each person added receives a real outbound WhatsApp message. Do-Not-Contact people are skipped.'
+      description: 'Add people to an active WhatsApp initiative. WARNING: each person added receives a real outbound WhatsApp message immediately. Requires a published journey. Do-Not-Contact people are skipped.'
       tags:
       - Initiatives
       requestBody:
@@ -4036,6 +4051,11 @@ paths:
                     - EXPIRED
                     - FAILED
                     description: ACTIVE (conversation may still happen), COMPLETED, STOPPED (messaging halted), EXPIRED, or FAILED.
+                  extractionStatus:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    description: 'PENDING (queued, not yet run), EXTRACTED (ran and wrote), INSUFFICIENT_DATA (nothing extractable here — too few messages or no reply on THIS initiative), FAILED, or null for a participant whose extraction has never been triggered. INSUFFICIENT_DATA does NOT mean the person never replied: check their other initiatives with scope="customer" on the messages endpoint.'
                   values:
                     type: array
                     items:
@@ -4067,6 +4087,7 @@ paths:
                 - phoneNumber
                 - name
                 - status
+                - extractionStatus
                 - values
                 additionalProperties: false
         '400':
@@ -4233,7 +4254,7 @@ paths:
     get:
       operationId: initiatives_participant_messages_list
       summary: Participant messages
-      description: The participant's full conversation transcript for this initiative, in order.
+      description: The participant's conversation transcript, in order. Defaults to this initiative only; pass scope="customer" for everything this person ever said to you across initiatives — use that whenever you need to know whether someone answered at all, since a reply lands on whichever initiative was live at the time and is invisible to the others.
       tags:
       - Initiatives
       parameters:
@@ -4253,6 +4274,17 @@ paths:
           type: string
           minLength: 1
           description: Participant id, as returned when adding or listing.
+      - name: scope
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          default: initiative
+          description: initiative (default) = only what was said under this initiative. customer = this person's whole message history across every initiative, each message tagged with the one it belongs to.
+          type: string
+          enum:
+          - initiative
+          - customer
       responses:
         '200':
           description: Success
@@ -4270,6 +4302,11 @@ paths:
                     - type: 'null'
                   channel:
                     type: string
+                  scope:
+                    type: string
+                    enum:
+                    - initiative
+                    - customer
                   data:
                     type: array
                     items:
@@ -4302,6 +4339,22 @@ paths:
                         sentAt:
                           type: string
                           description: ISO 8601 timestamp.
+                        initiative:
+                          description: Which initiative this message was exchanged under. Present only when reading a whole customer history (scope="customer"), where messages from several initiatives interleave.
+                          type: object
+                          properties:
+                            id:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                            name:
+                              anyOf:
+                              - type: string
+                              - type: 'null'
+                          required:
+                          - id
+                          - name
+                          additionalProperties: false
                       required:
                       - id
                       - direction
@@ -4317,6 +4370,7 @@ paths:
                 - participantId
                 - phoneNumber
                 - channel
+                - scope
                 - data
                 - next_cursor
                 additionalProperties: false
@@ -4513,6 +4567,13 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
+      - name: includeBody
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: 'Include HTTP_REQUEST bodies in step output: the response `body` (verbatim from the third party — may carry PII) and the resolved `requestBody` (credential secrets, env values, and document URLs are always masked at capture). Defaults to false: bodies are stripped; failure `reason` is always included.'
+          type: boolean
       responses:
         '200':
           description: Success
@@ -4559,7 +4620,7 @@ paths:
                           - type: 'null'
                           description: ISO 8601 timestamp, null if open.
                         output:
-                          description: Handler output (bounded); shape depends on node kind.
+                          description: Handler output (bounded); shape depends on node kind. HTTP_REQUEST body/requestBody appear only with includeBody=true; its failure `reason` (e.g. blocked_host, dns_failure, timeout) is always present when status is null.
                         error:
                           anyOf:
                           - type: object
@@ -4805,6 +4866,898 @@ paths:
                 required:
                 - stopped
                 - status
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/initiatives/{id}/pause:
+    post:
+      operationId: initiatives_pause
+      summary: Pause initiative
+      description: Stop enrolling new people into this initiative. Anyone already enrolled keeps their run, and conversations in progress continue normally. Reversible with resume.
+      tags:
+      - Initiatives
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          description: The initiative id.
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Initiative id.
+                  name:
+                    type: string
+                  channel:
+                    type: string
+                    enum:
+                    - WHATSAPP
+                    - EMAIL
+                  status:
+                    type: string
+                    enum:
+                    - DRAFT
+                    - ACTIVE
+                    - PAUSED
+                    - COMPLETED
+                    - CANCELED
+                  language:
+                    type: string
+                    description: Conversation language, e.g. `es`.
+                  objective:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  isRecurring:
+                    type: boolean
+                    description: Whether the initiative keeps processing newly added participants on a schedule.
+                  flagCondition:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    description: Natural-language condition; matching conversations get flagged during analysis.
+                  identityDeflection:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    description: Custom reply when a contact asks whether they are talking to a bot.
+                  createdAt:
+                    type: string
+                    description: ISO 8601 timestamp.
+                  updatedAt:
+                    type: string
+                    description: ISO 8601 timestamp.
+                  activatedAt:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  completedAt:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  canceledAt:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  pausedAt:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  context:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  maxAttempts:
+                    type: integer
+                    minimum: -9007199254740991
+                    maximum: 9007199254740991
+                  guidingQuestions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        questionText:
+                          type: string
+                        answerType:
+                          type: string
+                        priority:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                        scaleMin:
+                          anyOf:
+                          - type: integer
+                            minimum: -9007199254740991
+                            maximum: 9007199254740991
+                          - type: 'null'
+                        scaleMax:
+                          anyOf:
+                          - type: integer
+                            minimum: -9007199254740991
+                            maximum: 9007199254740991
+                          - type: 'null'
+                        options:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              label:
+                                type: string
+                              position:
+                                type: integer
+                                minimum: -9007199254740991
+                                maximum: 9007199254740991
+                            required:
+                            - id
+                            - label
+                            - position
+                            additionalProperties: false
+                      required:
+                      - id
+                      - questionText
+                      - answerType
+                      - priority
+                      - scaleMin
+                      - scaleMax
+                      - options
+                      additionalProperties: false
+                required:
+                - id
+                - name
+                - channel
+                - status
+                - language
+                - objective
+                - isRecurring
+                - flagCondition
+                - identityDeflection
+                - createdAt
+                - updatedAt
+                - activatedAt
+                - completedAt
+                - canceledAt
+                - pausedAt
+                - context
+                - maxAttempts
+                - guidingQuestions
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/initiatives/{id}/reextract:
+    post:
+      operationId: extraction_reextract
+      summary: Re-extract conversations
+      description: Re-run extraction over an initiative's existing conversations — the fix for participants whose replies were never read (a schema authored after the conversations happened, or an initiative that never had extraction run at all). Start with dryRun to see how many conversations are eligible and how many actually carry enough transcript to extract from. Only conversations with at least 3 messages including one reply can produce anything.
+      tags:
+      - Initiatives
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $schema: https://json-schema.org/draft/2020-12/schema
+              type: object
+              properties:
+                dryRun:
+                  default: false
+                  description: Count what would run without queueing anything. Do this first — the counts tell you whether re-extraction is worth the spend.
+                  type: boolean
+                force:
+                  default: false
+                  description: Re-extract conversations already extracted at the current schema version. Off by default, so a plain call only fills gaps.
+                  type: boolean
+                fromDate:
+                  description: Only consider conversations created at or after this ISO 8601 instant.
+                  type: string
+                  format: date-time
+                  pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          description: The initiative id.
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  initiativeId:
+                    type: string
+                  eligible:
+                    type: integer
+                    minimum: -9007199254740991
+                    maximum: 9007199254740991
+                    description: Conversations targeted for re-extraction.
+                  queued:
+                    type: integer
+                    minimum: -9007199254740991
+                    maximum: 9007199254740991
+                    description: Extractions actually enqueued — always 0 on a dry run.
+                  willExtract:
+                    type: integer
+                    minimum: -9007199254740991
+                    maximum: 9007199254740991
+                    description: Of the eligible set, how many carry enough transcript to produce values.
+                  insufficient:
+                    type: integer
+                    minimum: -9007199254740991
+                    maximum: 9007199254740991
+                    description: Eligible but below the analyzability bar (under 3 messages, or no reply on this initiative) — these will be marked INSUFFICIENT_DATA rather than extracted. A high number here usually means the replies live on a different initiative.
+                  dryRun:
+                    type: boolean
+                required:
+                - initiativeId
+                - eligible
+                - queued
+                - willExtract
+                - insufficient
+                - dryRun
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/initiatives/{id}/resume:
+    post:
+      operationId: initiatives_resume
+      summary: Resume initiative
+      description: Resume a paused initiative so it starts enrolling people again.
+      tags:
+      - Initiatives
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          description: The initiative id.
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Initiative id.
+                  name:
+                    type: string
+                  channel:
+                    type: string
+                    enum:
+                    - WHATSAPP
+                    - EMAIL
+                  status:
+                    type: string
+                    enum:
+                    - DRAFT
+                    - ACTIVE
+                    - PAUSED
+                    - COMPLETED
+                    - CANCELED
+                  language:
+                    type: string
+                    description: Conversation language, e.g. `es`.
+                  objective:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  isRecurring:
+                    type: boolean
+                    description: Whether the initiative keeps processing newly added participants on a schedule.
+                  flagCondition:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    description: Natural-language condition; matching conversations get flagged during analysis.
+                  identityDeflection:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                    description: Custom reply when a contact asks whether they are talking to a bot.
+                  createdAt:
+                    type: string
+                    description: ISO 8601 timestamp.
+                  updatedAt:
+                    type: string
+                    description: ISO 8601 timestamp.
+                  activatedAt:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  completedAt:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  canceledAt:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  pausedAt:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  context:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                  maxAttempts:
+                    type: integer
+                    minimum: -9007199254740991
+                    maximum: 9007199254740991
+                  guidingQuestions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        questionText:
+                          type: string
+                        answerType:
+                          type: string
+                        priority:
+                          type: integer
+                          minimum: -9007199254740991
+                          maximum: 9007199254740991
+                        scaleMin:
+                          anyOf:
+                          - type: integer
+                            minimum: -9007199254740991
+                            maximum: 9007199254740991
+                          - type: 'null'
+                        scaleMax:
+                          anyOf:
+                          - type: integer
+                            minimum: -9007199254740991
+                            maximum: 9007199254740991
+                          - type: 'null'
+                        options:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              label:
+                                type: string
+                              position:
+                                type: integer
+                                minimum: -9007199254740991
+                                maximum: 9007199254740991
+                            required:
+                            - id
+                            - label
+                            - position
+                            additionalProperties: false
+                      required:
+                      - id
+                      - questionText
+                      - answerType
+                      - priority
+                      - scaleMin
+                      - scaleMax
+                      - options
+                      additionalProperties: false
+                required:
+                - id
+                - name
+                - channel
+                - status
+                - language
+                - objective
+                - isRecurring
+                - flagCondition
+                - identityDeflection
+                - createdAt
+                - updatedAt
+                - activatedAt
+                - completedAt
+                - canceledAt
+                - pausedAt
+                - context
+                - maxAttempts
+                - guidingQuestions
                 additionalProperties: false
         '400':
           description: Validation failed or the request cannot proceed.
@@ -5240,6 +6193,308 @@ paths:
                 - round
                 - templateId
                 - templateName
+                additionalProperties: false
+        '400':
+          description: Validation failed or the request cannot proceed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '401':
+          description: Missing, malformed, or revoked API key.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '404':
+          description: The resource does not exist in this organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '409':
+          description: Conflicts with the current state (duplicates, wrong lifecycle state).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '422':
+          description: The request is well-formed but semantically invalid.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '429':
+          description: Rate limit exceeded — retry after `Retry-After`.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+        '503':
+          description: Transient error — retry with a narrower request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: Stable machine-readable error code (snake_case).
+                      message:
+                        type: string
+                    required:
+                    - code
+                    - message
+                required:
+                - error
+  /api/v1/initiatives/{id}/transcripts:
+    get:
+      operationId: initiatives_transcripts_list
+      summary: List transcripts
+      description: Full conversation transcripts for a page of participants, newest participant first. Use this to read or export ALL conversations of an initiative — one call per page (up to 100 participants) instead of looping the per-participant messages endpoint.
+      tags:
+      - Initiatives
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          type: string
+          minLength: 1
+          description: Initiative id.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Participants per page (default 20, max 100).
+          type: integer
+          minimum: 1
+          maximum: 100
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          $schema: https://json-schema.org/draft/2020-12/schema
+          description: Opaque cursor from a previous page.
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        participantId:
+                          type: string
+                        phoneNumber:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                        name:
+                          anyOf:
+                          - type: string
+                          - type: 'null'
+                        status:
+                          type: string
+                          enum:
+                          - ACTIVE
+                          - COMPLETED
+                          - STOPPED
+                          - EXPIRED
+                          - FAILED
+                          description: ACTIVE (conversation may still happen), COMPLETED, STOPPED (messaging halted), EXPIRED, or FAILED.
+                        createdAt:
+                          type: string
+                          description: When the participant was added (ISO 8601).
+                        messages:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type: string
+                              direction:
+                                type: string
+                                enum:
+                                - outbound
+                                - inbound
+                              author:
+                                type: string
+                                enum:
+                                - agent
+                                - participant
+                              type:
+                                type: string
+                                enum:
+                                - text
+                                - media
+                                - template
+                              text:
+                                type: string
+                              mediaUrl:
+                                anyOf:
+                                - type: string
+                                - type: 'null'
+                              sentAt:
+                                type: string
+                                description: ISO 8601 timestamp.
+                              initiative:
+                                description: Which initiative this message was exchanged under. Present only when reading a whole customer history (scope="customer"), where messages from several initiatives interleave.
+                                type: object
+                                properties:
+                                  id:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                  name:
+                                    anyOf:
+                                    - type: string
+                                    - type: 'null'
+                                required:
+                                - id
+                                - name
+                                additionalProperties: false
+                            required:
+                            - id
+                            - direction
+                            - author
+                            - type
+                            - text
+                            - mediaUrl
+                            - sentAt
+                            additionalProperties: false
+                          description: The full conversation, in order. Empty if no outreach yet.
+                      required:
+                      - participantId
+                      - phoneNumber
+                      - name
+                      - status
+                      - createdAt
+                      - messages
+                      additionalProperties: false
+                  next_cursor:
+                    anyOf:
+                    - type: string
+                    - type: 'null'
+                required:
+                - data
+                - next_cursor
                 additionalProperties: false
         '400':
           description: Validation failed or the request cannot proceed.

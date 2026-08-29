@@ -223,6 +223,16 @@ apis:
     url: https://docs.useboom.ai
   - type: APIReference
     url: https://docs.useboom.ai/api-reference/overview
+- aid: boom-ai:boom-ai-environments-api
+  name: Boom Ai Environments API
+  description: The Environments API from Boom Ai — 1 operation(s) for environments.
+  humanURL: https://docs.useboom.ai
+  baseURL: https://www.useboom.ai
+  tags:
+  - Environments
+  properties:
+  - type: OpenAPI
+    url: openapi/boom-ai-environments-api-openapi.yml
 common:
 - type: AgenticAccess
   url: agentic-access/boom-ai-agentic-access.yml
