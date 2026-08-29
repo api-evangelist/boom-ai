@@ -234,6 +234,9 @@ apis:
   - type: OpenAPI
     url: openapi/boom-ai-environments-api-openapi.yml
 common:
+- type: CapabilityMap
+  url: capabilities/boom-ai-capability-edges.yml
+  name: Boom Ai Business Capability Map
 - type: AgenticAccess
   url: agentic-access/boom-ai-agentic-access.yml
 - type: DomainSecurity
