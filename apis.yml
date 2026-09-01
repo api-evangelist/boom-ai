@@ -234,6 +234,9 @@ apis:
   - type: OpenAPI
     url: openapi/boom-ai-environments-api-openapi.yml
 common:
+- type: License
+  name: MIT
+  url: https://github.com/BOOM-TML/skills/blob/main/LICENSE
 - type: CapabilityMap
   url: capabilities/boom-ai-capability-edges.yml
   name: Boom Ai Business Capability Map
