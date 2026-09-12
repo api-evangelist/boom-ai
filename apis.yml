@@ -234,6 +234,8 @@ apis:
   - type: OpenAPI
     url: openapi/boom-ai-environments-api-openapi.yml
 common:
+- type: Website
+  url: https://www.useboom.ai/
 - type: License
   name: MIT
   url: https://github.com/BOOM-TML/skills/blob/main/LICENSE
