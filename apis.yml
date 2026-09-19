@@ -229,6 +229,8 @@ apis:
   humanURL: https://docs.useboom.ai
   baseURL: https://www.useboom.ai
   tags:
+  - Environment
+  tags_raw:
   - Environments
   properties:
   - type: OpenAPI
