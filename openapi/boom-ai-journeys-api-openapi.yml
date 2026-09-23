@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Boom Journeys API
   version: 1.0.0
-  description: 'Boom''s public REST API — one uniform surface over every platform capability. CDP: upsert people and custom objects, define object and relationship types, link and unlink relationships, and record behavioral events — one record per request or up to 1000 per request via the `/batch` endpoints. Segments: read (list, read, membership) and full authoring — discover the filterable catalog, validate a filter, create and update segments, preview match counts, and trigger evaluation. Initiatives: create and configure outreach initiatives, link WhatsApp templates, drive the lifecycle (launch, cancel, archive), and read collected-data summaries. Participants: enroll people into an active initiative, track their status, read conversation transcripts, and stop outreach. Journeys: read-only access to always-on message flows and their metrics. WhatsApp templates: list your WhatsApp numbers and list, read, and create message templates. The same capabilities are exposed as MCP tools with identical schemas.'
+  description: Boom's public REST API — one uniform surface over every platform capability.
 servers:
 - url: https://www.useboom.ai
   description: Production
@@ -7136,7 +7136,7 @@ paths:
     post:
       operationId: journeys_connect_nodes
       summary: Connect nodes
-      description: Wire an edge from one node to another on a given output handle (the emitted signal, e.g. SENT, REPLIED, YES, case:<id>). A handle can wire to only one node.
+      description: Wire an edge from one node to another on a given output handle (the emitted signal, e.g. SENT, REPLIED, YES, case:). A handle can wire to only one node.
       tags:
       - Journeys
       requestBody:
@@ -9518,7 +9518,7 @@ paths:
     get:
       operationId: journeys_message_variables
       summary: Message variable catalog
-      description: 'List the variables a SEND_MESSAGE template binding can reference for a journey — the same set the builder offers, and the authority on what resolves for THIS journey (when docs and this catalog disagree, trust the catalog). customer.* and person.* are offered for every trigger type (person.* is read live at send time from the identity the enrollment named — personExternalId, which event triggers always carry — and only falls back to a phone/email lookup, blank on zero or several matches, for contacts enrolled without a CDP person). The trigger-aware part is participant data: event-triggered journeys get the event payload under engagement.workflowState.* and no engagement.context.*, segment-triggered journeys get segment output columns under engagement.workflowState.*, and manual/CSV enrollment populates engagement.context.*. Bind a template placeholder to one of the returned `path` values (custom person attributes are `person.<key>`, NOT `attributes.<key>` — that is the DECISION/CASE condition syntax). Pass a journey id or its initiative id.'
+      description: 'List the variables a SEND_MESSAGE template binding can reference for a journey — the same set the builder offers, and the authority on what resolves for THIS journey (when docs and this catalog disagree, trust the catalog). customer.* and person.* are offered for every trigger type (person.* is read live at send time from the identity the enrollment named — personExternalId, which event triggers always carry — and only falls back to a phone/email lookup, blank on zero or several matches, for contacts enrolled without a CDP person). The trigger-aware part is participant data: event-triggered journeys get the event payload under engagement.workflowState.* and no engagement.context.*, segment-triggered journeys get segment output columns under engagement.workflowState.*, and manual/CSV enrollment populates engagement.context.*. Bind a template placeholder to one of the returned `path` values (custom person attributes are `person.`, NOT `attributes.` — that is the DECISION/CASE condition syntax). Pass a journey id or its initiative id.'
       tags:
       - Journeys
       parameters:
@@ -18005,7 +18005,7 @@ paths:
     get:
       operationId: journeys_condition_catalog
       summary: Condition catalog
-      description: 'List the person attributes and computed attributes available for DECISION and CASE CONDITIONS, plus the custom object types. Attribute tokens are ready to use as condition selection paths (e.g. attributes.plan, computed.ltv). NOTE: these `attributes.*` tokens are ONLY for DECISION/CASE conditions — SEND_MESSAGE template bindings use a different syntax (`person.<key>`); call journeys_message_variables for those. Also describes the cdp_predicate DECISION condition term shape: which `op` values are legal per attribute `type` (operatorsByType), and which `value` shape each `op` expects (cdpPredicateValueShapes).'
+      description: 'List the person attributes and computed attributes available for DECISION and CASE CONDITIONS, plus the custom object types. Attribute tokens are ready to use as condition selection paths (e.g. attributes.plan, computed.ltv). NOTE: these `attributes.*` tokens are ONLY for DECISION/CASE conditions — SEND_MESSAGE template bindings use a different syntax (`person.`); call journeys_message_variables for those. Also describes the cdp_predicate DECISION condition term shape: which `op` values are legal per attribute `type` (operatorsByType), and which `value` shape each `op` expects (cdpPredicateValueShapes).'
       tags:
       - Journeys
       responses:
