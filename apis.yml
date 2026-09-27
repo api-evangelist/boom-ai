@@ -70,6 +70,7 @@ tags:
 - E-Commerce
 - Agents
 - MCP
+- A2A
 tags_raw:
 - Company
 - Artificial Intelligence
@@ -83,12 +84,13 @@ tags_raw:
 - E-commerce
 - Agents
 - MCP
+- A2A
 apis:
 - aid: boom-ai:boom-ai-cdp-custom-objects-api
   name: Boom Ai CDP Custom Objects API
   description: The CDP Custom Objects API from Boom Ai — 5 operation(s) for cdp custom objects.
   humanURL: https://docs.useboom.ai
-  baseURL: https://www.useboom.ai
+  baseURL: https://dev.useboom.ai
   tags:
   - CDP Custom Objects
   properties:
@@ -102,7 +104,7 @@ apis:
   name: Boom Ai CDP Events API
   description: The CDP Events API from Boom Ai — 3 operation(s) for cdp events.
   humanURL: https://docs.useboom.ai
-  baseURL: https://www.useboom.ai
+  baseURL: https://dev.useboom.ai
   tags:
   - CDP Events
   properties:
@@ -116,7 +118,7 @@ apis:
   name: Boom Ai CDP People API
   description: The CDP People API from Boom Ai — 4 operation(s) for cdp people.
   humanURL: https://docs.useboom.ai
-  baseURL: https://www.useboom.ai
+  baseURL: https://dev.useboom.ai
   tags:
   - CDP People
   properties:
@@ -130,7 +132,7 @@ apis:
   name: Boom Ai CDP Relationships API
   description: The CDP Relationships API from Boom Ai — 4 operation(s) for cdp relationships.
   humanURL: https://docs.useboom.ai
-  baseURL: https://www.useboom.ai
+  baseURL: https://dev.useboom.ai
   tags:
   - CDP Relationships
   properties:
@@ -144,7 +146,7 @@ apis:
   name: Boom Ai CDP Sources API
   description: The CDP Sources API from Boom Ai — 1 operation(s) for cdp sources.
   humanURL: https://docs.useboom.ai
-  baseURL: https://www.useboom.ai
+  baseURL: https://dev.useboom.ai
   tags:
   - CDP Sources
   properties:
@@ -158,7 +160,7 @@ apis:
   name: Boom Ai HTTP credentials API
   description: The HTTP credentials API from Boom Ai — 1 operation(s) for http credentials.
   humanURL: https://docs.useboom.ai
-  baseURL: https://www.useboom.ai
+  baseURL: https://dev.useboom.ai
   tags:
   - HTTP credentials
   properties:
@@ -172,7 +174,7 @@ apis:
   name: Boom Ai Initiatives API
   description: The Initiatives API from Boom Ai — 14 operation(s) for initiatives.
   humanURL: https://docs.useboom.ai
-  baseURL: https://www.useboom.ai
+  baseURL: https://dev.useboom.ai
   tags:
   - Initiatives
   properties:
@@ -186,7 +188,7 @@ apis:
   name: Boom Ai Journeys API
   description: The Journeys API from Boom Ai — 16 operation(s) for journeys.
   humanURL: https://docs.useboom.ai
-  baseURL: https://www.useboom.ai
+  baseURL: https://dev.useboom.ai
   tags:
   - Journeys
   properties:
@@ -200,7 +202,7 @@ apis:
   name: Boom Ai Segments API
   description: The Segments API from Boom Ai — 7 operation(s) for segments.
   humanURL: https://docs.useboom.ai
-  baseURL: https://www.useboom.ai
+  baseURL: https://dev.useboom.ai
   tags:
   - Segments
   properties:
@@ -214,7 +216,7 @@ apis:
   name: Boom Ai WhatsApp templates API
   description: The WhatsApp templates API from Boom Ai — 3 operation(s) for whatsapp templates.
   humanURL: https://docs.useboom.ai
-  baseURL: https://www.useboom.ai
+  baseURL: https://dev.useboom.ai
   tags:
   - WhatsApp Templates
   tags_raw:
@@ -230,7 +232,7 @@ apis:
   name: Boom Ai Environments API
   description: The Environments API from Boom Ai — 1 operation(s) for environments.
   humanURL: https://docs.useboom.ai
-  baseURL: https://www.useboom.ai
+  baseURL: https://dev.useboom.ai
   tags:
   - Environment
   tags_raw:
@@ -337,3 +339,10 @@ x-enrichment:
   status: enriched
   artifacts_added: 24
   pass: local-v1
+x-a2a:
+  verified: true
+  probed: '2026-09-26'
+  url: "https://docs.useboom.ai/.well-known/agent-card.json"
+  grade: "conformant"
+  protocol_version: "0.3"
+  control: 404
