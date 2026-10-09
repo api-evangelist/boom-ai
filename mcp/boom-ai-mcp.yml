@@ -61,3 +61,18 @@ x-evidence:
 - url: https://docs.useboom.ai/use-mcp.md
   status: 200
   checked: '2026-08-13'
+rfc9728:
+  endpoint: https://www.useboom.ai/mcp
+  metadata_url: https://www.useboom.ai/.well-known/oauth-protected-resource/mcp
+  discovered_via: WWW-Authenticate resource_metadata on an anonymous POST initialize
+  fetched: '2026-09-25'
+  http_status: 200
+  content_type: application/json
+  document:
+    resource: https://www.useboom.ai/mcp
+    authorization_servers:
+    - https://clerk.useboom.ai
+    scopes_supported:
+    - profile
+    - email
+    - user:org:read
