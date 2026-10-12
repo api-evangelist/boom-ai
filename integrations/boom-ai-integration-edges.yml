@@ -1,0 +1,20 @@
+generated: '2026-10-12'
+method: none
+source:
+- https://zapier.com/apps/boom-ai/integrations
+- https://zapier.com/apps/boom/integrations
+- https://n8n.io/integrations/boom-ai/
+- https://n8n.io/integrations/boom/
+- https://composio.dev/toolkits/boom-ai
+- https://monid.ai/tools/boom-ai
+checked:
+- https://composio.dev/toolkits/boom-ai
+- https://monid.ai/tools/boom-ai
+- https://n8n.io/integrations/boom-ai/
+- https://n8n.io/integrations/boom/
+- https://zapier.com/apps/boom-ai/integrations
+- https://zapier.com/apps/boom/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []
